@@ -1,0 +1,47 @@
+﻿@using MedicalCorporateWebPortal.AppData;
+@model Tuple<Doctor, Service, DateOfAppointment, string, User>
+
+<h2>Запись на прием</h2>
+
+<div class="body-content">
+    <div class="col-lg-4">
+        <h3>Данные записи</h3>
+        <div class="beige-box">
+            <div>
+                @string.Format("{0} {1}, {2}  {3}", Model.Item3.Date.Day, Model.Item3.Date.Month, Model.Item3.Date.DayOfWeek, Model.Item4)
+            </div> 
+            <hr />
+            <div class="record-ticket-header">Услуга</div>
+            <div>@Model.Item2.Name</div>
+            <div class="record-ticket-header">Врач</div>
+            <div>@string.Format("{0} {1} {2}", Model.Item5.LastName, Model.Item5.FirstName, Model.Item5.LastName)</div>
+            <div class="record-ticket-cost">
+                <text class="record-ticket-header">Стоимость</text>
+                @if(Model.Item2.Price <= 0)
+                {
+                    <b>Бесплатно</b>
+                }
+                else
+                {
+                    <b>@Model.Item2.Price</b>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <h3>Контактные данные</h3>
+        <div class="beige-box">
+            <h1>ФИО</h1>
+            <input type="text" class="form-control" id="name" />
+            <input type="text" class="form-control" id="surname" />
+            <input type="text" class="form-control" id="lastname" />
+            <h1>Эл. почта</h1>
+            <input type="text" class="form-control" id="mail" />
+            <h1>Телефон</h1>
+            <input type="text" class="form-control" id="phone" value="8(000)000-00-00" />
+        </div>
+    </div>
+</div>
+
+
+

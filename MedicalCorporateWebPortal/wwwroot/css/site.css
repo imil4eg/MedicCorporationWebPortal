@@ -101,6 +101,21 @@
     border: 1 px solid grey;
 }
 
+.beige-box {
+    border: 1 px solid black;
+    border-color: #F5F5DC;
+}
+
+.record-ticket-header{
+    text-align:left;
+    color: grey;
+}
+
+.record-ticket-cost{
+    border-top: 1 px solid grey;
+    border-bottom: 1 px solid grey;
+}
+
 footer{
     position:fixed;
     bottom: 0;
