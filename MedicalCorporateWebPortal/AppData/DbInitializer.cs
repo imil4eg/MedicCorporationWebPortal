@@ -53,6 +53,8 @@ namespace MedicalCorporateWebPortal.AppData
                 context.Services.Add(s);
             }
 
+            context.SaveChanges();
+
             var doctorProvideServices = new DoctorProvideService[]
             {
                 new DoctorProvideService{DoctorID = 2, ServiceID = 1},
