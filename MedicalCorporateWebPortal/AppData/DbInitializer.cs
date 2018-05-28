@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MedicalCorporateWebPortal.Models;
+using System;
 using System.Linq;
 
 namespace MedicalCorporateWebPortal.AppData
@@ -26,10 +27,14 @@ namespace MedicalCorporateWebPortal.AppData
                 context.Users.Add(u);
             }
 
+            context.SaveChanges();
+
             for (int i = 1; i < users.Length + 1; i++)
             {
                 context.Employees.Add(new Employee { UserID = users[i - 1].UserID });
             }
+
+            context.SaveChanges();
 
             var doctors = new Doctor[]
             {

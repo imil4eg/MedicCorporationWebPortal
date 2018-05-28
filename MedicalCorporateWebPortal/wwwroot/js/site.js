@@ -1,9 +1,3 @@
-﻿function disablingItems(item) {
-    if (!item || !citem) {
-
-    }
-}
-
-function calculatePeriod(item) {
-    
-}
+﻿$(document).ready(function () {
+    $('#imageCarousel').carousel();
+});

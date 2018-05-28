@@ -2,9 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MedicalCorporateWebPortal.AppData
+namespace MedicalCorporateWebPortal.Models
 {
-    public class AppointmentTime
+    public class ReservedTime
     {
         [Key]
         public int ID { get; set; }
@@ -17,6 +17,8 @@ namespace MedicalCorporateWebPortal.AppData
         [DataType(DataType.Time)]
         public DateTime Time { get; set; }
 
-        public bool Reserved { get; set; }
+        public int? UserID { get; set; }
+        [ForeignKey("UserID")]
+        public virtual User User { get; set; }
     }
 }

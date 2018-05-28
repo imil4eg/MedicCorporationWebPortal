@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace MedicalCorporateWebPortal.AppData
+namespace MedicalCorporateWebPortal.Models
 {
     public class User
     {

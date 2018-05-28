@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MedicalCorporateWebPortal.AppData
+namespace MedicalCorporateWebPortal.Models
 {
     public class Employee
     {

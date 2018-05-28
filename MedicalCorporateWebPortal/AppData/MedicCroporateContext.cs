@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MedicalCorporateWebPortal.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace MedicalCorporateWebPortal.AppData
@@ -17,7 +18,7 @@ namespace MedicalCorporateWebPortal.AppData
         public DbSet<ServicesHistory> Story { get; set; }
         public DbSet<DoctorProvideService> ProvideServices { get; set; }
         public DbSet<DateOfAppointment> AppointmentDates { get; set; }
-        public DbSet<AppointmentTime> AppointmentTimes { get; set; }
+        public DbSet<ReservedTime> AppointmentTimes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,7 +30,7 @@ namespace MedicalCorporateWebPortal.AppData
             modelBuilder.Entity<ServicesHistory>().ToTable("ServicesHistory");
             modelBuilder.Entity<DoctorProvideService>().ToTable("DoctorProvideService");
             modelBuilder.Entity<DateOfAppointment>().ToTable("DateOfAppointment");
-            modelBuilder.Entity<AppointmentTime>().ToTable("AppointmentTime");
+            modelBuilder.Entity<ReservedTime>().ToTable("AppointmentTime");
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;

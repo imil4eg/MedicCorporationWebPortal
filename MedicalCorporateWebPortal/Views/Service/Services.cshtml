@@ -1,0 +1,22 @@
+﻿@using MedicalCorporateWebPortal.Models;
+@model IEnumerable<Service>
+
+@using (Html.BeginForm("Services", "Service", FormMethod.Get))
+{
+    <h2>Усугли и цены</h2>
+
+    <div>
+        <ul>
+            @foreach (var service in Model)
+            {
+                <li>
+                    <a class="col-md-8" href="">
+                        <span>@service.Name</span>
+                    </a>
+                    <div class="col-md-2">@service.Price</div>
+                </li>
+            }
+        </ul>
+    </div>
+}
+
