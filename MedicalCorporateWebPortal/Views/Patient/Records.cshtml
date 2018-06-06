@@ -1,0 +1,23 @@
+﻿@model IEnumerable<MedicalCorporateWebPortal.Models.RecordViewModel>
+
+@{
+    ViewData["Title"] = "Records";
+}
+
+<h2>Записи</h2>
+
+@using (Html.BeginForm("", "", FormMethod.Get))
+{
+    <div>
+        <ul>
+            @foreach (var record in Model)
+            {
+            <li>
+                <div class="col-md-2">@string.Format("Врач: {0} {1}, Дата проведения: {2}, Название услуги: {3}, Цена: {4}", record.User.LastName, record.User.FirstName, record.Date.ToString("HH:mm"), record.Service.Name, (record.Service.Price > 0m) ? Math.Truncate(record.Service.Price).ToString() : "Бесплатно")</div>
+                @Html.ActionLink("Отменить", "CancelRecord", "Patient", new { @reservedTimeID = record.ReservedTime.ID }, new { @class = "btn btn-primary" })
+            </li>
+            }
+        </ul>
+    </div>
+
+}

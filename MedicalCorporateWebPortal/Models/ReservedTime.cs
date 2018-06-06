@@ -16,9 +16,16 @@ namespace MedicalCorporateWebPortal.Models
         [Required]
         [DataType(DataType.Time)]
         public DateTime Time { get; set; }
-
-        public int? UserID { get; set; }
+        
+        /// <summary>
+        /// User reserved id
+        /// </summary>
+        public Guid UserID { get; set; }
         [ForeignKey("UserID")]
         public virtual User User { get; set; }
+
+        public int ServiceID { get; set; }
+        [ForeignKey("ServiceID")]
+        public virtual Service Service { get; set; }
     }
 }

@@ -1,0 +1,60 @@
+﻿@model IEnumerable<MedicalCorporateWebPortal.Models.AppoitmentViewModel>
+
+@{
+    ViewData["Title"] = "Appointments";
+}
+
+<h2>История услуг</h2>
+
+@{
+    var culture = new System.Globalization.CultureInfo("ru-RU");
+}
+@using (Html.BeginForm("", "", FormMethod.Get))
+{
+    @if (User.IsInRole(UserRole.Врач.ToString()))
+    {
+        <table class="table">
+            <tr>
+                <td>Фамилия</td>
+                <td>Имя</td>
+                <td>Название услуги</td>
+                <td>Дата</td>
+            </tr>
+            @foreach (var appointment in Model)
+            {
+                <tr>
+                    <td>@appointment.PatientLastName</td>
+                    <td>@appointment.PatientFirstName</td>
+                    <td>@appointment.ServiceName</td>
+                    <td>@string.Format("{0}, {1} {2}  {3}", appointment.Date.Day, appointment.Date.Date.Month.ToString("MMMM"), culture.DateTimeFormat.GetDayName(appointment.Date.DayOfWeek), appointment.Date.ToShortTimeString())</td>
+                    <td>
+                        @Html.ActionLink("Посмотреть", "AppointmentDetails", "Appointment", new { appointmentId = appointment.AppointmentId }, new { @class = "btn btn-success" })
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+    else if (User.IsInRole(UserRole.Пациент.ToString()))
+    {
+        <table class="table">
+            <tr>
+                <td>Фамилия</td>
+                <td>Имя</td>
+                <td>Название услуги</td>
+                <td>Дата</td>
+            </tr>
+            @foreach (var appointment in Model)
+            {
+                <tr>
+                    <td>@appointment.DoctorLastName</td>
+                    <td>@appointment.DoctorFirstName</td>
+                    <td>@appointment.ServiceName</td>
+                    <td>@string.Format("{0}, {1}  {2}", appointment.Date.Date.Month, culture.DateTimeFormat.GetDayName(appointment.Date.DayOfWeek), appointment.Date.ToShortTimeString())</td>
+                    <td>
+                        @Html.ActionLink("Посмотреть", "AppointmentDetails", "Appointment", new { @appointmentId = appointment.AppointmentId }, new { @class = "btn btn-success" })
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+}

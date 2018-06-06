@@ -1,0 +1,27 @@
+﻿@model MedicalCorporateWebPortal.Models.AppoitmentViewModel
+
+@{
+    ViewData["Title"] = "Appointment";
+}
+
+<h2>@ViewBag.Message</h2>
+
+@using (Html.BeginForm("Appointment", "Doctor", FormMethod.Post))
+{
+    @Html.HiddenFor(model => model.DoctorId)
+    @Html.HiddenFor(model => model.PatientId)
+    @Html.HiddenFor(model => model.ServiceID)
+    @Html.HiddenFor(model => model.ReservedTimeID)
+
+    <h3>Данные</h3>
+    @Html.ValidationMessageFor(model => model.Information, "", new { @class = "text-danger" })
+    @Html.TextAreaFor(model => model.Information, 10, 15, new { @class = "form-control" })
+
+    <hr />
+    <h3>Результат</h3>
+    @Html.ValidationMessageFor(model => model.Result, "", new { @class = "text-danger" })
+    @Html.TextAreaFor(model => model.Result, 10, 15, new { @class = "form-control" })
+    <hr />
+    <input type="submit" value="Сохранить" class="btn btn-success" />
+}
+

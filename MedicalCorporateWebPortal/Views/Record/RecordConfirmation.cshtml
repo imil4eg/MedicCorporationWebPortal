@@ -1,47 +1,86 @@
-﻿@using MedicalCorporateWebPortal.Models;
-@model Tuple<Doctor, Service, DateOfAppointment, string, User>
+﻿@model MedicalCorporateWebPortal.Models.RecordConfirmViewModel
+
+
+<h2 class="text-danger">@ViewBag.Message</h2>
 
 <h2>Запись на прием</h2>
 
-<div class="body-content">
+@using (Html.BeginForm("RecordConfirmation", "Record", FormMethod.Post))
+{
+    @Html.HiddenFor(model => model.DoctorID)
+    @Html.HiddenFor(Model => Model.Date)
+    @Html.HiddenFor(model => model.ServiceID)
     <div class="col-lg-4">
         <h3>Данные записи</h3>
         <div class="beige-box">
             <div>
-                @string.Format("{0} {1}, {2}  {3}", Model.Item3.Date.Day, Model.Item3.Date.Month, Model.Item3.Date.DayOfWeek, Model.Item4)
-            </div> 
+                @{
+                    var culture = new System.Globalization.CultureInfo("ru-RU");
+                }
+                @string.Format("{0}, {1}  {2}  {3}", Model.Date.Day, Model.Date.Month.ToString("MMMM"), culture.DateTimeFormat.GetDayName(Model.Date.DayOfWeek), Model.Date.ToShortTimeString())
+            </div>
             <hr />
             <div class="record-ticket-header">Услуга</div>
-            <div>@Model.Item2.Name</div>
+            <div>@Model.ServiceName</div>
             <div class="record-ticket-header">Врач</div>
-            <div>@string.Format("{0} {1} {2}", Model.Item5.LastName, Model.Item5.FirstName, Model.Item5.LastName)</div>
+            <div>@string.Format("{0} {1}", Model.DoctorLastName, Model.DoctorFirstName)</div>
             <div class="record-ticket-cost">
                 <text class="record-ticket-header">Стоимость</text>
-                @if(Model.Item2.Price <= 0)
+                @if (Model.ServiceCost <= 0)
                 {
                     <b>Бесплатно</b>
                 }
                 else
                 {
-                    <b>@Model.Item2.Price</b>
+                    <b>@Model.ServiceCost</b>
                 }
             </div>
         </div>
     </div>
-    <div class="col-lg-8">
-        <h3>Контактные данные</h3>
-        <div class="beige-box">
-            <h1>ФИО</h1>
-            <input type="text" class="form-control" id="name" />
-            <input type="text" class="form-control" id="surname" />
-            <input type="text" class="form-control" id="lastname" />
-            <h1>Эл. почта</h1>
-            <input type="text" class="form-control" id="mail" />
-            <h1>Телефон</h1>
-            <input type="text" class="form-control" id="phone" value="8(000)000-00-00" />
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <div class="col-lg-8 form-horizontal">
+            <h3>Контактные данные</h3>
+            <div class="form-group">
+                <h1>ФИО</h1>
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.LastName)
+                    @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.FirstName)
+                    @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <h1>Эл. почта</h1>
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Email)
+                    @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <h1>Телефон</h1>
+                <div class="col-md-10">
+                    @Html.TextBoxFor(model => model.Phone)
+                    @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-2">
+                    <input type="submit" class="btn btn-success" value="Записаться" />
+                </div>
+            </div>
         </div>
-    </div>
-</div>
+    }
+    @if (User.IsInRole(UserRole.Врач.ToString()))
+    {
+        @Html.ActionLink("Записать пациента", "Patients", "Doctor", new { @doctorId = Model.DoctorID, @date = Model.Date, @serviceId = Model.ServiceID }, new { @class = "btn btn-success"})
+    }
+}
+
 
 
 

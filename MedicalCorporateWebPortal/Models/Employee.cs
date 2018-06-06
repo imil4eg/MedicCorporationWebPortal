@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MedicalCorporateWebPortal.Models
@@ -8,7 +9,7 @@ namespace MedicalCorporateWebPortal.Models
         [Key]
         public int EmployeeID { get; set; }
 
-        public int UserID { get; set; }
+        public Guid UserID { get; set; }
         [ForeignKey("UserID")]
         public virtual User User { get; set; }
     }

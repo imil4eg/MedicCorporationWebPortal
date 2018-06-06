@@ -1,6 +1,8 @@
 ﻿using MedicalCorporateWebPortal.AppData;
+using MedicalCorporateWebPortal.Models;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -20,7 +22,9 @@ namespace MedicalCorporateWebPortal
                 try
                 {
                     var context = services.GetRequiredService<MedicCroporateContext>();
-                    DbInitializer.Initialize(context);
+                    var userManager = services.GetRequiredService<UserManager<User>>();
+                    var roleManager = services.GetRequiredService<RoleManager<ApplicationRole>>();
+                    DbInitializer.Initialize(context, userManager, roleManager).Wait();
                 }
                 catch(Exception ex)
                 {

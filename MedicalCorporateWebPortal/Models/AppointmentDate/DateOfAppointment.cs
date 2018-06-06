@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,9 +16,11 @@ namespace MedicalCorporateWebPortal.Models
 
         [Required]
         [DataType(DataType.Date)]
-        public DateTime Date { get; set; }
+        [DisplayName("Дата")]
+        public DateTime Date { get; set; }      
 
         [Required]
+        [DisplayName("Период работы")]
         public string PeriodOfWorking { get; set; }
     }
 }

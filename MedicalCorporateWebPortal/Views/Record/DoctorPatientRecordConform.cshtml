@@ -1,0 +1,30 @@
+﻿@model IList<MedicalCorporateWebPortal.Models.PatientViewModel>
+
+@{
+    ViewData["Title"] = "DoctorPatientRecordConform";
+}
+
+<h2>Выберите пациента</h2>
+
+@using (Html.BeginForm("", "", FormMethod.Get))
+{
+    <table class="table">
+        <tr>
+            <td>Фамилия</td>
+            <td>Имя</td>
+            <td>Название услуги</td>
+            <td>Время</td>
+        </tr>
+        @foreach (var patient in Model)
+        {
+            <tr>
+                <td>@patient.PatientLastName</td>
+                <td>@patient.PatientFirstName</td>
+                <td>
+                    @Html.ActionLink("Записать", "DoctorPatientRecordConform", "Doctor", new { @patientId = patient.PatientId, @doctorId = patient.DoctorId, @date = patient.Date, @serviceId = patient.ServiceId }, new { @class = "btn btn-success" })
+                </td>
+            </tr>
+        }
+    </table>
+}
+

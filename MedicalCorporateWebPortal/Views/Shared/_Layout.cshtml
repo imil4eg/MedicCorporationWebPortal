@@ -18,27 +18,49 @@
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
 </head> 
-<body link="white" vlink="white" alink="white">
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div id="forward_header">
-            <p id="jopa">MedicalJopa</p>
-        </div>
+<body>
+    <div class="nav navbar-fixed-top login_form">
+        @Html.Partial("_LoginPartial")
+    </div>
+    <div class="forward_header">
+        <p class="main_name">Амбулаторно-поликлиническое медицинское учреждение</p>
+    </div>
+    <div class="header">
+        <ul class="header_url">
+            <li><a asp-area="" asp-controller="Home" asp-action="Index">Главная</a></li>
+            <li><a asp-area="" asp-controller="Home" asp-action="About">Информация</a></li>
+            <li><a asp-area="" asp-controller="Home" asp-action="Contact">Контакты</a></li>
+            <li><a asp-area="" asp-controller="Doctor" asp-action="Doctors">Специалисты</a></li>
+            <li><a asp-area="" asp-controller="Service" asp-action="Services">Услуги и цены</a></li>
+        </ul>
+    </div>
+    @*<nav class="navbar navbar-inverse navbar-fixed-top">
         <div class="navbar-collapse collapse" id="header">
-            <p class="nav" id="header_text">
+            <ul class="nav navbar-nav">
+                <li><a asp-area="" asp-controller="Home" asp-action="Index">Главная</a></li>
+                <li><a asp-area="" asp-controller="Home" asp-action="About">Информация</a></li>
+                <li><a asp-area="" asp-controller="Home" asp-action="Contact">Контакты</a></li>
+                <li><a asp-area="" asp-controller="Doctor" asp-action="Doctors">Специалисты</a></li>
+                <li><a asp-area="" asp-controller="Service" asp-action="Services">Услуги и цены</a></li>
+            </ul>
+            @Html.Partial("_LoginPartial")
+            @*<p class="nav" id="header_text">
                 <a asp-area="" asp-controller="Home" asp-action="Index">Главная</a>
                 <a asp-area="" asp-controller="Home" asp-action="About">Информация</a>
                 <a asp-area="" asp-controller="Home" asp-action="Contact">Контакты</a>
                 <a asp-area="" asp-controller="Doctor" asp-action="Doctors">Специалисты</a>
                 <a asp-area="" asp-controller="Service" asp-action="Services">Услуги и цены</a>
+                @Html.Partial("_LoginPartial")
             </p>
         </div>
-    </nav>
-    <div class="container body-content" id="content">
+    </nav>*@
+    <div class="content">
+        <div class="white_content_box"></div>
         @RenderBody()
         <hr />
-        <footer>
-            <p>&copy; 2018 - MedicalCorporateWebPortal</p>
-        </footer>
+        <div class="footer">
+            © 2018 Амбулаторно-поликлиническое медицинское учреждение
+        </div>
     </div>
 
     <environment include="Development">

@@ -1,0 +1,39 @@
+﻿@model MedicalCorporateWebPortal.Models.AppoitmentViewModel
+
+@{
+    ViewData["Title"] = "AppoitmentDetails";
+}
+
+<h2>@ViewBag.Message</h2>
+
+@if (User.IsInRole(UserRole.Врач.ToString()))
+{
+    @using (Html.BeginForm("EditAppointment", "Appointment", FormMethod.Post))
+    {
+        @Html.HiddenFor(model => model.AppointmentId)
+
+        <h3>Данные</h3>
+        @Html.ValidationMessageFor(model => model.Information, "", new { @class = "text-danger" })
+        @Html.TextAreaFor(model => model.Information, 10, 15, new { @class = "form-control" })
+
+        <hr />
+        <h3>Результат</h3>
+        @Html.ValidationMessageFor(model => model.Result, "", new { @class = "text-danger" })
+        @Html.TextAreaFor(model => model.Result, 10, 15, new { @class = "form-control" })
+        <hr />
+        <input type="submit" value="Сохранить" class="btn btn-success" />
+    }
+}
+else if (User.IsInRole(UserRole.Пациент.ToString()))
+{
+    @using (Html.BeginForm("", "", FormMethod.Get))
+    {
+        <h3>Данные</h3>
+        @Html.TextAreaFor(model => model.Information, 10, 15, new { @class = "form-control", @readonly = true })
+
+        <hr />
+        <h3>Результат</h3>
+        @Html.TextAreaFor(model => model.Result, 10, 15, new { @class = "form-control", @readonly = true })
+        <hr />
+    }
+}

@@ -1,59 +1,92 @@
-﻿@using MedicalCorporateWebPortal.Models;
-@model Tuple<User, Doctor, IEnumerable<DateOfAppointment>, IEnumerable<DoctorProvideService>>
+﻿@model MedicalCorporateWebPortal.Models.DoctorViewModel
 
 @{
     ViewData["Title"] = "Специалисты";
 }
 
-@using (Html.BeginForm("DoctorProfile", "Doctor", FormMethod.Get))
-{
-    <div>
+<div class="info_main_block">
+    <div class="emp_info_box">
         <div>
-            <div class="inline">
-                <img src="~/images/default-user-image.png" alt="avatar" width="100" height="75" />
-            </div>
-            <div class="inline">
-                <h1>@string.Format("{0} {1}", Model.Item1.LastName, Model.Item1.FirstName)</h1>
-                <b>@Model.Item2.Speciality</b>
-            </div>
-        </div>
-        <div>
-            @if (Model.Item3.Count() > 0)
-            {
-                <input type="button" value="Запись на прием" href="" class="btn btn-block" width="100" height="60" />
-            }
-            else
-            {
-                <div class="btn btn-block">Запись на прием</div>
-            }
-        </div>
-        <div>
-            <ul class="nav navbar-nav">
-                <li>
-                    @if (Model.Item3.Count() > 0)
-                    {
-                        <a href="@Url.Action("Schedules", "Schedule", new { @doctorId = Model.Item2.ID, @serviceId = 1 })">
-                            <span>Расписание</span>
-                        </a>
-                    }
-                    else
-                    {
-                        <div class="col-md-1">Расписание</div>
-                    }
-                </li>
-                <li>
-                    @if (Model.Item4.Count() > 0)
-                    {
-                        <a href="">
-                            <span>Услуги</span>
-                        </a>
-                    }
-                    else
-                    {
-                        <div class="col-md-1">Услуги</div>
-                    }
-                </li>
+            <ul class="emp_info_spec">
+                <li><img class="doc_img" src="~/images/default-user-image.png" alt="avatar" width="100%" height="100%" /></li>
+                <li class="name">@string.Format("{0} {1}", Model.User.LastName, Model.User.FirstName)</li>
+                <li class="spec">@Model.SpecialtyName</li>
             </ul>
+            @*<img src="~/images/default-user-image.png" alt="avatar" width="100" height="75" />*@
         </div>
+        @*<div class="inline">
+                <h1>@string.Format("{0} {1}", Model.User.LastName, Model.User.FirstName)</h1>
+                <b>@Model.SpecialtyName</b>
+            </div>*@
+        @if (Model.DatesOfAppointment.Count() > 0)
+        {
+            <input type="button" value="Запись на прием" href="" class="btn btn-success navbar-right" width="100" height="60" />
+        }
+        else
+        {
+            <div class="btn btn-block navbar-right">Запись на прием</div>
+        }
+        <ul class="nav navbar-nav">
+            <li>
+                @if (Model.DatesOfAppointment.Count() > 0)
+                {
+                    @Html.ActionLink("Запись на прием", "Schedules", "Schedule", new { @doctorId = Model.Doctor.ID, @serviceId = 1 }, new { @class = "btn btn-success"   })
+                }
+                else
+                {
+                    <div class="col-md-1">Расписание</div>
+                }
+            </li>
+            <li>
+                @if (Model.ProvideServices.Count() > 0)
+                {
+                    <a href="">
+                        <span>Услуги</span>
+                    </a>
+                }
+                else
+                {
+                    <div class="col-md-1">Услуги</div>
+                }
+            </li>
+        </ul>
     </div>
-}
+    @*<div>
+        @if (Model.DatesOfAppointment.Count() > 0)
+        {
+            <input type="button" value="Запись на прием" href="" class="btn btn-success" width="100" height="60" />
+        }
+        else
+        {
+            <div class="btn btn-block">Запись на прием</div>
+        }
+    </div>
+    <div class="emp_info_box">
+        <ul class="nav navbar-nav">
+            <li>
+                @if (Model.DatesOfAppointment.Count() > 0)
+                {
+                    <a href="@Url.Action("Schedules", "Schedule", new { @doctorId = Model.Doctor.ID, @serviceId = 1 })">
+                        <span>Расписание</span>
+                    </a>
+                }
+                else
+                {
+                    <div class="col-md-1">Расписание</div>
+                }
+            </li>
+            <li>
+                @if (Model.ProvideServices.Count() > 0)
+                {
+                    <a href="">
+                        <span>Услуги</span>
+                    </a>
+                }
+                else
+                {
+                    <div class="col-md-1">Услуги</div>
+                }
+            </li>
+        </ul>
+    </div>*@
+</div>

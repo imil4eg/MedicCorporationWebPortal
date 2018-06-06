@@ -1,64 +1,127 @@
-﻿@using MedicalCorporateWebPortal.Models;
-@model IList<Tuple<User, Doctor, IEnumerable<string>>>
+﻿@using System.Globalization
+@model IList<DoctorViewModel>
 
 @{
     ViewData["Title"] = "Специалисты";
 }
 
-@using (Html.BeginForm("Doctors", "Doctor", FormMethod.Get))
-{
-    <div id="assets">
-        <h3>Специалисты</h3>
-        <div id="parent" class="container">
-            @for (int i = 0; i < Model.Count(); i++)
-            {
-                @if (i % 3 == 0)
-                {
-                    <p></p>
-                }
-                <div class="col-md-2 col-xs-5 inline block">
-                    <table>
-                        <tr>
-                            <td>
-                                <img src="~/images/default-user-image.png" alt="avatar" width="100" height="75" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <a href="@Url.Action("DoctorProfile","Doctor",new { id = Model[i].Item1.UserID })">
-                                    <span>
-                                        @string.Format("{0} {1}", Model[i].Item1.LastName, Model[i].Item1.FirstName)
-                                    </span>
-                                </a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @Model[i].Item2.Speciality
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                @if (Model[i].Item3.Count() > 0)
-                                {
-                                    @foreach (var date in Model[i].Item3)
-                                    {
-                                        <div class="col-md-1">@date</div>
-                                    }
+    <h3>Специалисты</h3>
 
-                                    <a href="">
-                                        <span>
-                                            Записаться
-                                        </span>
-                                    </a>
-                                }
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            }
+<div class="white_content_box"></div>
+<div class="emp_view">
+    <div class="emp_search">
+        <form class="form-wrapper">
+            <input type="text" id="search" placeholder="Вася Пупкин и тд" required>
+            <input type="submit" value="найти" id="submit">
+        </form>
+    </div>
+    <div class="white_content_box"></div>
+    <div class="emp_menu">
+        <span class="choose"></span>
+
+        <div class="dropdown">
+            <div class="select">
+                <span>Все специалисты</span>
+                <i class="fa fa-chevron-left"><img src="~/images/sort-up.png"></i>
+            </div>
+            <input type="hidden" name="gender">
+            <ul class="dropdown-menu">
+                <li id="male">Male</li>
+                <li id="female">Female</li>
+                <li id="male">M12</li>
+                <li id="male">Ma32le</li>
+                <li id="male">Ma42le</li>
+            </ul>
         </div>
     </div>
-}
+    <span class="msg"></span>
+</div>
+<div class="white_content_box"></div>
+<div id="assets">
+    <div id="parent" class="container">
+        @for (int i = 0; i < Model.Count(); i++)
+        {
+            @if (i % 3 == 0)
+            {
+                <p></p>
+            }
+            <div class="emp_box">
+                <div class="doc_item">
+                    <img class="doc_img" src="~/images/default-user-image.png" alt="avatar" width="100" height="75" />
+                    <div class="doc_name">
+                        <a href="@Url.Action("DoctorProfile","Doctor", new { @userName = Model[i].User.UserName })">
+                            <span>
+                                @string.Format("{0} {1}", Model[i].User.LastName, Model[i].User.FirstName)
+                            </span>
+                        </a>
+                        <div class="doc_spec">
+                            @Model[i].Doctor.Specialty.Name
+                        </div>
+                        <div class="doc_name">
+                            @if (Model[i].DatesOfAppointment.Count() > 0)
+                            {
+                                CultureInfo ci = new CultureInfo("ru-Ru");
+                                DateTimeFormatInfo dtfi = ci.DateTimeFormat;
+                                @foreach (var date in Model[i].DatesOfAppointment)
+                                {
+                                    <div class="col-md-1">@dtfi.GetShortestDayName(date.Date.DayOfWeek)</div>
+                                }
+                            }
+                        </div>
+                        <div class="doc_name">
+                            <a href="@Url.Action("Schedules", "Schedule", new { @doctorId = Model[i].Doctor.ID, @serviceId = 1 })">
+                                <span>
+                                    Записаться
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                @*<table>
+                    <tr>
+                        <td>
+                            <img class="doc_img" src="~/images/default-user-image.png" alt="avatar" width="100" height="75" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <a href="@Url.Action("DoctorProfile","Doctor", new { @userName = Model[i].User.UserName })">
+                                <span>
+                                    @string.Format("{0} {1}", Model[i].User.LastName, Model[i].User.FirstName)
+                                </span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @Model[i].Doctor.Specialty.Name
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            @if (Model[i].DatesOfAppointment.Count() > 0)
+                            {
+                                CultureInfo ci = new CultureInfo("ru-Ru");
+                                DateTimeFormatInfo dtfi = ci.DateTimeFormat;
+                                @foreach (var date in Model[i].DatesOfAppointment)
+                                {
+                                    <div class="col-md-1">@dtfi.GetShortestDayName(date.Date.DayOfWeek)</div>
+                                }
+
+                                <a href="">
+                                    <span>
+                                        Записаться
+                                    </span>
+                                </a>
+                            }
+                        </td>
+                    </tr>
+                </table>*@
+            </div>
+        }
+    </div>
+</div>
+<div class="white_content_box"></div>   
 
 
+@*col-md-2 col-xs-5 inline block*@ 

@@ -1,0 +1,28 @@
+﻿@model IEnumerable<MedicalCorporateWebPortal.Models.EmployeeViewModel>
+
+@{
+    ViewData["Title"] = "Employees";
+}
+
+<h2>Рабочие</h2>
+
+@using(Html.BeginForm("", "", FormMethod.Get))
+{
+    <table class="table">
+        <tr>
+            <td>Фамилия</td>
+            <td>Имя</td>
+            <td>Специальность</td>
+            <td>Отработанных часов</td>
+        </tr>
+        @foreach(var employee in Model)
+        {
+            <tr>
+                <td>@employee.DoctorLastName</td>
+                <td>@employee.DoctorFirstName</td>
+                <td>@employee.DoctorSpecilty</td>
+                <td>@employee.WorkedTime</td>
+            </tr>
+        }
+    </table>
+}

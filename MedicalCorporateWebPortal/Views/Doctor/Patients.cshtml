@@ -1,0 +1,32 @@
+﻿@model IEnumerable<MedicalCorporateWebPortal.Models.PatientRecordViewModel>
+
+@{
+    ViewData["Title"] = "Patients";
+}
+
+<h2>Список записанных пациентов</h2>
+
+@using(Html.BeginForm("", "", FormMethod.Get))
+{
+    <table class="table">
+        <tr>
+            <td>Фамилия</td>
+            <td>Имя</td>
+            <td>Название услуги</td>
+            <td>Время</td>
+        </tr>
+        @foreach(var patient in Model)
+        {
+            <tr>
+                <td>@patient.PatientLastName</td>
+                <td>@patient.PatientFirstName</td>
+                <td>@patient.ServiceName</td>
+                <td>@patient.Time.ToString("HH:mm")</td>
+                <td>
+                    @Html.ActionLink("Принять", "Appointment", "Doctor", new { @userId = patient.PatientID, @serviceId = patient.ServiceId, @reservedTimeId = patient.ReservedTimeId}, new { @class = "btn btn-success" })
+                </td>
+            </tr>
+        }
+    </table>
+}
+

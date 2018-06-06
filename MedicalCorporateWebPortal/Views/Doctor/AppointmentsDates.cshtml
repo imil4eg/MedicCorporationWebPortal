@@ -1,0 +1,39 @@
+﻿@model IList<MedicalCorporateWebPortal.Models.DateOfAppointment>
+
+@{
+    ViewData["Title"] = "AppointmentsDates";
+}
+
+<h2>Дни приемов</h2>
+
+@{ 
+    var culture = new System.Globalization.CultureInfo("ru-Ru");
+}
+
+@Html.ActionLink("Создать прием", "AppointmentDate", "Doctor", null, new { @class = "btn btn-success" })
+
+@using (Html.BeginForm("", "", FormMethod.Get))
+{
+    <table class="table">
+        <tr>
+            <td>Номер</td>
+            <td>Дата приема</td>
+            <td>Период работы</td>
+        </tr>
+        @for (int i = 1; i < Model.Count + 1; i++)
+        {
+            <tr>
+                <td>@i</td>
+                <td>@string.Format("{0}, {1} {2}", Model[i - 1].Date.Day, Model[i - 1].Date.ToString("MMMM"), culture.DateTimeFormat.GetDayName(Model[i - 1].Date.DayOfWeek))</td>
+                <td>@Model[i - 1].PeriodOfWorking</td>
+                @if ((Model[i - 1].Date > DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Friday)))
+                {
+                <td>@Html.ActionLink("Изменить", "AppointmentDate", "Doctor", new { @appointmentDateId = Model[i - 1].DateOfAppointmentID }, new { @class = "btn btn-default" })</td>
+
+                <td>@Html.ActionLink("Удалить", "", "", null, new { @class = "btn btn-danger" })</td>
+                }
+            </tr>
+        }
+    </table>
+}
+

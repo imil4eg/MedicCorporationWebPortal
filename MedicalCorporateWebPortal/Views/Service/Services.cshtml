@@ -1,22 +1,33 @@
 ﻿@using MedicalCorporateWebPortal.Models;
 @model IEnumerable<Service>
 
-@using (Html.BeginForm("Services", "Service", FormMethod.Get))
-{
-    <h2>Усугли и цены</h2>
 
-    <div>
-        <ul>
-            @foreach (var service in Model)
-            {
-                <li>
-                    <a class="col-md-8" href="">
-                        <span>@service.Name</span>
-                    </a>
-                    <div class="col-md-2">@service.Price</div>
-                </li>
-            }
-        </ul>
-    </div>
-}
+
+
+<div class="info_main_block">
+    <p class="info_top">Усугли и цены</p>
+    
+    @if (User.IsInRole(UserRole.Администратор.ToString()))
+    {
+        @Html.ActionLink("Добавить", "CreateService", "Service", null, new { @class = "btn btn-success" })
+    }
+    
+    <table class="table">
+        @foreach (var service in Model)
+        {
+            <tr>
+                <td>@Html.ActionLink(service.Name, "ServiceProfile", "Service")</td>
+                <td>@string.Format("{0} руб.", service.Price)</td>
+                @if (User.IsInRole(UserRole.Администратор.ToString()))
+                {
+                    <td>@Html.ActionLink("Изменить", "EditService", "Service", new { @serviceId = service.ServiceID }, new { @class = "btn btn-primary" })</td>
+                    <td>@Html.ActionLink("Удалить", "", "", null, new { @class = "btn btn-danger" })</td>
+                }
+            </tr>
+    
+        }
+    </table>
+
+</div>
+
 

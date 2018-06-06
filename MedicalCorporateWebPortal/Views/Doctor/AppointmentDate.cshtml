@@ -1,0 +1,41 @@
+﻿@model MedicalCorporateWebPortal.Models.AppointmentDateViewModel
+
+@{
+    ViewData["Title"] = "AppointmentDate";
+}
+
+<h2>@ViewBag.Message</h2>
+
+@using (Html.BeginForm("AppointmentDate", "Doctor", FormMethod.Post))
+{
+    @Html.HiddenFor(model => model.AppointmentDateId)
+    <div class="form-horizontal">
+        <hr />
+        <div class="form-group">
+            @Html.LabelFor(model => model.Date, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Date, "{0:dd-MM-yyyy}", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.PeriodOfWorking, new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                C
+                @Html.TextBoxFor(model => model.StartOfWork, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.StartOfWork, "", new { @class = "text-danger" })
+                По
+                @Html.TextBoxFor(mdeol => Model.EndOfWork, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.EndOfWork, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Сохранить" class="btn btn-success" />
+            </div>
+            <div class="col-md-offset-2 col-md-10">
+                @Html.ActionLink("Назад", "", "", null, new { @class = "btn btn-default" })
+            </div>
+        </div>
+    </div>
+}

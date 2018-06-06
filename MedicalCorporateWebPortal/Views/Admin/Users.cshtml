@@ -1,0 +1,50 @@
+﻿@model IList<User>
+
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h2>Изменение пользователей</h2>
+
+@using (Html.BeginForm("", "", FormMethod.Post, new { @class = "form-wrapper" }))
+{
+    <input type="text" id="search" placeholder="Вася Пупкин и тд" required>
+    <span class="input-group-addon">-</span>
+    @Html.DropDownList("UserRole", new SelectList(Enum.GetValues(typeof(UserRole))), new { @class = "form-control" })
+    <input type="submit" value="найти" id="submit">
+}
+
+
+<table class="table">
+    <tr>
+        <td>@Html.LabelFor(model => model[0].Id)</td>
+        <td>@Html.LabelFor(model => model[0].UserName)</td>
+        <td>@Html.LabelFor(model => model[0].LastName)</td>
+        <td>@Html.LabelFor(model => model[0].FirstName)</td>
+        <td>@Html.LabelFor(model => model[0].MiddleName)</td>
+        <td>@Html.LabelFor(model => model[0].Email)</td>
+        <td>@Html.LabelFor(model => model[0].Gender)</td>
+        <td>@Html.LabelFor(model => model[0].Role)</td>
+    </tr>
+    @for (int i = 0; i < Model.Count; i++)
+    {
+        <tr>
+            <td>@Model[i].Id</td>
+            <td>@Model[i].UserName</td>
+            <td>@Model[i].LastName</td>
+            <td>@Model[i].FirstName</td>
+            <td>@Model[i].MiddleName</td>
+            <td>@Model[i].Email</td>
+            <td>@Model[i].Gender</td>
+            <td>@Model[i].Role</td>
+            <td>
+                @Html.ActionLink("Изменить", "UserProfile", "Admin", new { @userName = Model[i].UserName }, new { @class = "btn btn-primary" })
+            </td>
+            <td>
+                @Html.ActionLink("Удалить", "DeleteUser", "Admin", new { @userName = Model[i].UserName }, new { @class = "btn btn-danger" })
+            </td>
+        </tr>
+    }
+</table>
+
+

@@ -20,7 +20,13 @@ namespace MedicalCorporateWebPortal.Models
         //[ForeignKey("DoctorProvideServiceID")]
         //public virtual DoctorProvideService DoctorProvideService { get; set; }
 
-        [Required]
-        public string Speciality { get; set; }
+        public int SpecialtyID { get; set; }
+        [ForeignKey("SpecialtyID")]
+        public Specialty Specialty { get; set; }
+
+        /// <summary>
+        /// Indicates if doctor deleted
+        /// </summary>
+        public bool IsDeleted { get; set; }
     }
 }

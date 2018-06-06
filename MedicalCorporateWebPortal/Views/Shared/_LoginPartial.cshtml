@@ -1,0 +1,83 @@
+﻿@if (User.Identity.IsAuthenticated)
+{
+    @using (Html.BeginForm("LogOff", "Security", FormMethod.Post, new { id = "logoutForm", @class ="login_form" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <ul class="login_form">
+            <li>
+                @Html.ActionLink("Привет " + User.Identity.Name + "!", "", "", routeValues: null, htmlAttributes: new { title = "Личный кабинет" })
+            </li>
+            <li>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Меню</a>
+                <ul class="dropdown-menu">
+                    @if (User.IsInRole(UserRole.Администратор.ToString()))
+                    {
+                        <li>@Html.ActionLink("Администрирование", "Users", "Admin")</li>
+                    }
+                    else if (User.IsInRole(UserRole.Бухгалтер.ToString()))
+                    {
+                        <li>@Html.ActionLink("Список рабочих", "Employees", "Employee")</li>
+                    }
+                    else if (User.IsInRole(UserRole.Врач.ToString()))
+                    {
+                        <li>@Html.ActionLink("Записи пациентов", "PatientsRecords", "Doctor")</li>
+                        <li>@Html.ActionLink("Приемы", "AppointmentsDates", "Doctor")</li>
+                    }
+                    else if (User.IsInRole(UserRole.Пациент.ToString()))
+                    {
+                        <li>@Html.ActionLink("Записи на прием", "Records", "Patient")</li>
+                    }
+
+                    @if(User.IsInRole(UserRole.Пациент.ToString()) || User.IsInRole(UserRole.Врач.ToString()))
+                    {
+                        <li>@Html.ActionLink("История услуг", "Appointments", "Appointment")</li>
+                    }
+                    <li>@Html.ActionLink("Личный кабинет", "Profile", "Profile")</li>
+                </ul>
+            </li>
+            <li><a href="javascript:document.getElementById('logoutForm').submit()">Выйти</a></li>
+        </ul>
+    }
+
+    @*<ul id="header_text">
+            <li>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Меню</a>
+                <ul class="dropdown-menu">
+                    @if (User.IsInRole(UserRole.Администратор.ToString()))
+                    {
+                        <li>@Html.ActionLink("Администрирование", "", "")</li>
+                    }
+                    @if (User.IsInRole(UserRole.Бухгалтер.ToString()))
+                    {
+                        <li>@Html.ActionLink("Список рабочих", "", "")</li>
+                    }
+                    @if (User.IsInRole(UserRole.Врач.ToString()))
+                    {
+                        <li>@Html.ActionLink("Принять пациента", "", "")</li>
+                    }
+                    <li>@Html.ActionLink("Личный кабинет", "", "")</li>
+                    <li>@Html.ActionLink("Выйти", "LogOff", "Security")</li>
+                    <li><input type="submit" name="LogOff" class="btn btn-link" /></li>
+                </ul>
+            </li>
+        </ul>
+
+        using (Html.BeginForm("LogOff", "Security", FormMethod.Post, new { id = "logoutForm", @class = "nav" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ActionLink("Привет " + User.Identity.Name + "!", "", "", routeValues: null, htmlAttributes: new { title = "Личный кабинет" })
+            <a href="javascript:document.getElementById('logoutForm').submit()">Выйти</a>
+        }*@
+}
+else
+{
+    <ul class="login_form">
+        <li>@Html.ActionLink("Регистрация", "Register", "Security")</li>
+        <li>@Html.ActionLink("Войти", "Login", "Security")</li>
+    </ul>
+
+    @*@Html.ActionLink("Регистрация", "Register", "Security")
+    @Html.ActionLink("Войти", "Login", "Security")*@
+}
+
