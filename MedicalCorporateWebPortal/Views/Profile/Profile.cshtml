@@ -4,91 +4,101 @@
     ViewData["Title"] = "Profile";
 }
 
-<h2>Личный кабинет</h2>
-
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.Email)
-            <div class="col-md-10">
-                @Model.Email
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.LastName)
-            <div class="col-md-10">
-                @Model.LastName
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.FirstName)
-            <div class="col-md-10">
-                @Model.FirstName
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.MiddleName)
-            <div class="col-md-10">
-                @Model.MiddleName
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.PhoneNumber)
-            <div class="col-md-10">
-                @Model.PhoneNumber
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.Gender)
-            <div class="col-md-10">
-                @Model.Gender
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.DateOfBirth)
-            <div class="col-md-10">
-                @Model.DateOfBirth
-            </div>
-        </div>
-        @if (User.IsInRole(UserRole.Пациент.ToString()))
-        {
-            <div class="form-group">
-                @Html.LabelFor(model => model.Address)
-                <div class="col-md-10">
-                    @Model.Address
-                </div>
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(model => model.PassportSeries)
-                <div class="col-md-10">
-                    @Model.PassportSeries
-                </div>
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(model => model.PassportNumber)
-                <div class="col-md-10">
-                    @Model.PassportNumber
-                </div>
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(model => model.InsuranceNumber)
-                <div class="col-md-10">
-                    @Model.InsuranceNumber
-                </div>
-            </div>
-            <div class="form-group">
-                @Html.LabelFor(model => model.InsuranceCompany)
-                <div class="col-md-10">
-                    @Model.InsuranceCompany
-                </div>
-            </div>
-        }
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-2">
-                @Html.ActionLink("Изменить", "EditProfile", "Profile", new { }, new { @class = "btn btn-success" })
-            </div>
+<div class="form-horizontal info_main_block">
+    <p class="info_top">Личный кабинет</p>
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.Email, new { @class = "col-md-10" })
+        <div class="col-md-10">
+            @Model.Email
         </div>
     </div>
+    <hr />
+    <div class="form-group">
+        @Html.LabelFor(model => model.LastName, new { @class = "col-md-10" })
+        <div class="col-md-10">
+            @Model.LastName
+        </div>
+    </div>
+    <hr />
+    <div class="form-group">
+        @Html.LabelFor(model => model.FirstName, new { @class = "col-md-10" })
+        <div class="col-md-10">
+            @Model.FirstName
+        </div>
+    </div>
+    <hr />
+    <div class="form-group">
+        @Html.LabelFor(model => model.MiddleName, new { @class = "col-md-10" })
+        <div class="col-md-10">
+            @Model.MiddleName
+        </div>
+    </div>
+    <hr />
+    <div class="form-group">
+        @Html.LabelFor(model => model.PhoneNumber, new { @class = "col-md-10" })
+        <div class="col-md-10">
+            @Model.PhoneNumber
+        </div>
+    </div>
+    <hr />
+    <div class="form-group">
+        @Html.LabelFor(model => model.Gender, new { @class = "col-md-10" })
+        <div class="col-md-10">
+            @Model.Gender
+        </div>
+    </div>
+    <hr />
+    <div class="form-group">
+        @Html.LabelFor(model => model.DateOfBirth, new { @class = "col-md-10" })
+        <div class="col-md-10">
+            @Model.DateOfBirth
+        </div>
+    </div>
+    <hr />
+    @if (User.IsInRole(UserRole.Пациент.ToString()))
+    {
+        <div class="form-group">
+            @Html.LabelFor(model => model.Address, new { @class = "col-md-10" })
+            <div class="col-md-10">
+                @Model.Address
+            </div>
+        </div>
+        <hr />
+        <div class="form-group">
+            @Html.LabelFor(model => model.PassportSeries, new { @class = "col-md-10" })
+            <div class="col-md-10">
+                @Model.PassportSeries
+            </div>
+        </div>
+        <hr />
+        <div class="form-group">
+            @Html.LabelFor(model => model.PassportNumber, new { @class = "col-md-10" })
+            <div class="col-md-10">
+                @Model.PassportNumber
+            </div>
+        </div>
+        <hr />
+        <div class="form-group">
+            @Html.LabelFor(model => model.InsuranceNumber, new { @class = "col-md-10" })
+            <div class="col-md-10">
+                @Model.InsuranceNumber
+            </div>
+        </div>
+        <hr />
+        <div class="form-group">
+            @Html.LabelFor(model => model.InsuranceCompany, new { @class = "col-md-10" })
+            <div class="col-md-10">
+                @Model.InsuranceCompany
+            </div>
+        </div>
+    }
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-2">
+            @Html.ActionLink("Изменить", "EditProfile", "Profile", new { }, new { @class = "btn btn-success" })
+        </div>
+    </div>
+</div>
 

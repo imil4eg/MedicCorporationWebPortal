@@ -31,7 +31,7 @@
                 @if (Model.DatesOfAppointment.Count() > 0)
                 {
                     @Html.ActionLink("Запись на прием", "Schedules", "Schedule", new { @doctorId = Model.Doctor.ID, @serviceId = 1 }, new { @class = "btn btn-success"   })
-                }
+                }   
                 else
                 {
                     <div class="col-md-1">Расписание</div>

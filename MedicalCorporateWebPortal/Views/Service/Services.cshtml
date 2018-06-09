@@ -3,15 +3,21 @@
 
 
 
+<div class="emp_search">
+    <form class="form-wrapper">
+        <input type="text" id="search" placeholder="Название услуги" required>
+        <input type="submit" value="найти" id="submit">
+    </form>
+</div>
 
 <div class="info_main_block">
     <p class="info_top">Усугли и цены</p>
-    
+
     @if (User.IsInRole(UserRole.Администратор.ToString()))
     {
         @Html.ActionLink("Добавить", "CreateService", "Service", null, new { @class = "btn btn-success" })
     }
-    
+
     <table class="table">
         @foreach (var service in Model)
         {
@@ -24,7 +30,7 @@
                     <td>@Html.ActionLink("Удалить", "", "", null, new { @class = "btn btn-danger" })</td>
                 }
             </tr>
-    
+
         }
     </table>
 

@@ -47,3 +47,9 @@ function animation() {
     }
     $('.slider').animate({ marginLeft: margin }, 1000);          // Блок .slider смещается влево на 1 слайд.
 };
+
+$(function () {
+    $('.datepicker-inline').datepicker({
+        language: 'ru'
+    });
+});

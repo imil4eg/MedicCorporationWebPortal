@@ -10,14 +10,14 @@
     @Html.HiddenFor(model => model.DoctorID)
     @Html.HiddenFor(Model => Model.Date)
     @Html.HiddenFor(model => model.ServiceID)
-    <div class="col-lg-4">
+    <div class="record-confirm-info-block">
         <h3>Данные записи</h3>
         <div class="beige-box">
             <div>
                 @{
                     var culture = new System.Globalization.CultureInfo("ru-RU");
                 }
-                @string.Format("{0}, {1}  {2}  {3}", Model.Date.Day, Model.Date.Month.ToString("MMMM"), culture.DateTimeFormat.GetDayName(Model.Date.DayOfWeek), Model.Date.ToShortTimeString())
+                @string.Format("{0}, {1}  {2}  {3}", Model.Date.Day, Model.Date.ToString("MMMM"), culture.DateTimeFormat.GetDayName(Model.Date.DayOfWeek), Model.Date.ToShortTimeString())
             </div>
             <hr />
             <div class="record-ticket-header">Услуга</div>
@@ -39,7 +39,7 @@
     </div>
     @if (!User.Identity.IsAuthenticated)
     {
-        <div class="col-lg-8 form-horizontal">
+        <div class="record-confirm-contrls-block form-horizontal">
             <h3>Контактные данные</h3>
             <div class="form-group">
                 <h1>ФИО</h1>
@@ -77,7 +77,16 @@
     }
     @if (User.IsInRole(UserRole.Врач.ToString()))
     {
-        @Html.ActionLink("Записать пациента", "Patients", "Doctor", new { @doctorId = Model.DoctorID, @date = Model.Date, @serviceId = Model.ServiceID }, new { @class = "btn btn-success"})
+        <div class="record-confirm-contrls-block">
+            @Html.ActionLink("Записать пациента", "Patients", "Doctor", new { @doctorId = Model.DoctorID, @date = Model.Date, @serviceId = Model.ServiceID }, new { @class = "btn btn-success btn-sx" })
+        </div>
+    }
+    else if (User.IsInRole(UserRole.Пациент.ToString()))
+    {
+        <div class="record-confirm-contrls-block" style="background-color:none;">
+            <input type="submit" class="btn btn-success" value="Записаться" />
+        </div>
+
     }
 }
 

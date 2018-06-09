@@ -4,18 +4,32 @@
     ViewData["Title"] = "Employees";
 }
 
-<h2>Рабочие</h2>
-
-@using(Html.BeginForm("", "", FormMethod.Get))
+<h3>Выберите месяц</h3>
+@using (Html.BeginForm("", "", FormMethod.Post, new { @class = "row" }))
 {
+
+<div class="form-group col-md-3">
+    <div class="input-group date datepicker-inline">
+        <input type="text" class="form-control" />
+        <div class="input-group-addon glyphicon glyphicon-th"></div>
+    </div>
+</div>
+    <input type="submit" value="Найти"/>
+}
+<br />
+
+@using (Html.BeginForm("", "", FormMethod.Get, new { @class = "info_main_block" }))
+{
+    <p class="info_top">Рабочие</p>
+
     <table class="table">
-        <tr>
-            <td>Фамилия</td>
-            <td>Имя</td>
-            <td>Специальность</td>
-            <td>Отработанных часов</td>
+        <tr class="tr-border-bottom">
+            <td class="td-font-weight">Фамилия</td>
+            <td class="td-font-weight">Имя</td>
+            <td class="td-font-weight">Специальность</td>
+            <td class="td-font-weight">Отработанных часов</td>
         </tr>
-        @foreach(var employee in Model)
+        @foreach (var employee in Model)
         {
             <tr>
                 <td>@employee.DoctorLastName</td>

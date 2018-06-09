@@ -6,6 +6,13 @@
 
 <h2>Выберите пациента</h2>
 
+<div class="emp_search">
+    <form class="form-wrapper">
+        <input type="text" id="search" placeholder="Вася Пупкин и тд" required>
+        <input type="submit" value="найти" id="submit">
+    </form>
+</div>
+
 @using (Html.BeginForm("", "", FormMethod.Get))
 {
     <table class="table">

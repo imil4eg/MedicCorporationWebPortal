@@ -13,94 +13,97 @@
     <div class="form-horizontal">
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
-            @Html.LabelFor(model => model.Email)
+            @Html.LabelFor(model => model.Email, new { @class = "col-md-10" })
             <div class="col-md-10">
-                @Html.TextBoxFor(m => m.Email)
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.LastName)
+            @Html.LabelFor(model => model.LastName, new { @class =  "col-md-10"})
             <div class="col-md-10">
-                @Html.TextBoxFor(m => m.LastName)
+                @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.FirstName)
+            @Html.LabelFor(model => model.FirstName, new { @class = "col-md-10" })
             <div class="col-md-10">
-                @Html.TextBoxFor(m => m.FirstName)
+                @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.MiddleName)
+            @Html.LabelFor(model => model.MiddleName, new { @class = "col-md-10" })
             <div class="col-md-10">
-                @Html.TextBoxFor(m => m.MiddleName)
+                @Html.TextBoxFor(m => m.MiddleName, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.MiddleName, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.PhoneNumber)
+            @Html.LabelFor(model => model.PhoneNumber, new { @class = "col-md-10" })
             <div class="col-md-10">
-                @Html.TextBoxFor(m => m.PhoneNumber)
+                @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.Gender)
+            @Html.LabelFor(model => model.Gender, new { @class = "col-md-10" })
             <div class="col-md-10">
-                @Html.DropDownListFor(m => m.Gender, new SelectList(Enum.GetValues(typeof(Gender))))
+                @Html.DropDownListFor(m => m.Gender, new SelectList(Enum.GetValues(typeof(Gender))), new { @class = "form-control" })
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.DateOfBirth)
+            @Html.LabelFor(model => model.DateOfBirth, new { @class = "col-md-10" })
             <div class="col-md-10">
-                @Html.TextBoxFor(m => m.DateOfBirth)
-                @Html.ValidationMessageFor(model => model.DateOfBirth, "", new { @class = "text-danger" })
+                <div class="input-group date datepicker-inline">
+                    @Html.TextBoxFor(model => model.DateOfBirth, new { @class = "form-control" })
+                    <div class="input-group-addon glyphicon glyphicon-th"></div>
+                    @Html.ValidationMessageFor(model => model.DateOfBirth, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
         @if (User.IsInRole(UserRole.Пациент.ToString()))
         {
             <div class="form-group">
-                @Html.LabelFor(model => model.Address)
+                @Html.LabelFor(model => model.Address, new { @class = "col-md-10" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(m => m.Address)
+                    @Html.TextBoxFor(m => m.Address, new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="form-group">
-                @Html.LabelFor(model => model.PassportSeries)
+                @Html.LabelFor(model => model.PassportSeries, new { @class = "col-md-10" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(m => m.PassportSeries)
+                    @Html.TextBoxFor(m => m.PassportSeries, new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.PassportSeries, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="form-group">
-                @Html.LabelFor(model => model.PassportNumber)
+                @Html.LabelFor(model => model.PassportNumber, new { @class = "col-md-10" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(m => m.PassportNumber)
+                    @Html.TextBoxFor(m => m.PassportNumber, new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.PassportNumber, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="form-group">
-                @Html.LabelFor(model => model.InsuranceNumber)
+                @Html.LabelFor(model => model.InsuranceNumber, new { @class = "col-md-10" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(m => m.InsuranceNumber)
+                    @Html.TextBoxFor(m => m.InsuranceNumber, new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.InsuranceNumber, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="form-group">
-                @Html.LabelFor(model => model.InsuranceCompany)
+                @Html.LabelFor(model => model.InsuranceCompany, new { @class = "col-md-10" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(m => m.InsuranceCompany)
+                    @Html.TextBoxFor(m => m.InsuranceCompany, new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.InsuranceCompany, "", new { @class = "text-danger" })
                 </div>
             </div>
                         <div class="form-group">
-                @Html.LabelFor(model => model.SNILS)
+                @Html.LabelFor(model => model.SNILS, new { @class = "col-md-10" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(m => m.SNILS)
+                    @Html.TextBoxFor(m => m.SNILS, new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.SNILS, "", new { @class = "text-danger" })
                 </div>
             </div>

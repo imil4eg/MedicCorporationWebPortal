@@ -227,11 +227,40 @@ a:hover{
     border: solid 1px #ECECEC ;
 }
 
+.record-confirm-info-block{
+    background-color: white;
+    width: 30%;
+    padding: 2%;
+    position: absolute;
+    left: 0;
+    margin: auto;
+    display: inline-block;
+}
 
+.record-confirm-contrls-block{
+    background-color: white;
+    padding: 2%;
+    margin: auto;
+    display: inline-block;
+    position: absolute;
+    left: 40%;
+}
+
+.tr-border-bottom td{
+    border-bottom: 2px solid black;
+}
+
+.td-font-weight{
+    font-weight:900;
+}
 
 .img_slider{
     border-radius: 5px;
     margin: center;
+}
+
+.word-center{
+
 }
 
 .info_main_block{

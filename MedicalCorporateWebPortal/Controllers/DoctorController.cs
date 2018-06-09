@@ -275,15 +275,14 @@ namespace MedicalCorporateWebPortal.Controllers
             {
                 List<PatientViewModel> models = new List<PatientViewModel>();
                 var reservedTimes = _context.AppoitmentReservedTime.Where(rt => rt.DateOfAppointmentID == appointment.DateOfAppointmentID);
-                foreach(var time in reservedTimes)
+                foreach(var patient in _context.Patients)
                 {
-                    var user = await _context.Users.FindAsync(time.UserID);
-                    var patient = await _context.Patients.FindAsync(user.Id);
+                    var user = await _context.Users.FindAsync(patient.UserID);
                     models.Add(new PatientViewModel
                     {
-                        PatientLastName = user.LastName,
-                        PatientFirstName = user.FirstName,
                         PatientId = patient.UserID,
+                        PatientFirstName = user.FirstName,
+                        PatientLastName = user.LastName,
                         DoctorId = doctorId,
                         Date = date,
                         ServiceId = serviceId
