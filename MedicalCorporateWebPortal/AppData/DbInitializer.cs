@@ -179,8 +179,8 @@ namespace MedicalCorporateWebPortal.AppData
 
             var services = new Service[]
             {
-                new Service{Name = "Прием ревматолога (первичный)", Price = 0, Description = "Прием"},
-                new Service{Name = "Прием ревматолога (вторичный)", Price = 600, Description = "Прием 2"}
+                new Service{Name = "Прием ревматолога (первичный)", Price = 0, Description = "Прием", IsDeleted = false },
+                new Service{Name = "Прием ревматолога (вторичный)", Price = 600, Description = "Прием 2", IsDeleted = false}
             };
             foreach (Service s in services)
             {

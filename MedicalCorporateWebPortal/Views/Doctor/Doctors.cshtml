@@ -57,14 +57,14 @@
                         <div class="doc_spec">
                             @Model[i].Doctor.Specialty.Name
                         </div>
-                        <div class="doc_name">
+                        <div class="record-days">
                             @if (Model[i].DatesOfAppointment.Count() > 0)
                             {
                                 CultureInfo ci = new CultureInfo("ru-Ru");
                                 DateTimeFormatInfo dtfi = ci.DateTimeFormat;
                                 @foreach (var date in Model[i].DatesOfAppointment)
                                 {
-                                    <div class="col-md-1">@dtfi.GetShortestDayName(date.Date.DayOfWeek)</div>
+                                    <div class="record-day">@dtfi.GetShortestDayName(date.Date.DayOfWeek)</div>
                                 }
                             }
                         </div>

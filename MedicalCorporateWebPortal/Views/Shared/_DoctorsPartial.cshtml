@@ -1,0 +1,48 @@
+﻿@model IList<DoctorViewModel>
+@using System.Globalization;
+
+
+<div id="assets">
+    <div id="parent" class="container">
+        @for (int i = 0; i < Model.Count(); i++)
+        {
+            @if (i % 3 == 0)
+            {
+                <p></p>
+            }
+            <div class="emp_box">
+                <div class="doc_item">
+                    <img class="doc_img" src="~/images/default-user-image.png" alt="avatar" width="100" height="75" />
+                    <div class="doc_name">
+                        <a href="@Url.Action("DoctorProfile","Doctor", new { @userName = Model[i].User.UserName })">
+                            <span>
+                                @string.Format("{0} {1}", Model[i].User.LastName, Model[i].User.FirstName)
+                            </span>
+                        </a>
+                        <div class="doc_spec">
+                            @Model[i].Doctor.Specialty.Name
+                        </div>
+                        <div class="record-days">
+                            @if (Model[i].DatesOfAppointment.Count() > 0)
+                            {
+                                CultureInfo ci = new CultureInfo("ru-Ru");
+                                DateTimeFormatInfo dtfi = ci.DateTimeFormat;
+                                @foreach (var date in Model[i].DatesOfAppointment)
+                                {
+                                    <div class="record-day">@dtfi.GetShortestDayName(date.Date.DayOfWeek)</div>
+                                }
+                            }
+                        </div>
+                        <div class="doc_name">
+                            <a href="@Url.Action("Schedules", "Schedule", new { @doctorId = Model[i].Doctor.ID, @serviceId = 1 })">
+                                <span>
+                                    Записаться
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

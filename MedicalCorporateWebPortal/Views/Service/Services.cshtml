@@ -10,6 +10,8 @@
     </form>
 </div>
 
+<br />
+
 <div class="info_main_block">
     <p class="info_top">Усугли и цены</p>
 
@@ -22,7 +24,7 @@
         @foreach (var service in Model)
         {
             <tr>
-                <td>@Html.ActionLink(service.Name, "ServiceProfile", "Service")</td>
+                <td>@Html.ActionLink(service.Name, "ServiceProfile", "Service", new { @serviceId = service.ServiceID })</td>
                 <td>@string.Format("{0} руб.", service.Price)</td>
                 @if (User.IsInRole(UserRole.Администратор.ToString()))
                 {

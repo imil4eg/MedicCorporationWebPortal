@@ -327,6 +327,17 @@ a:hover{
     padding: 4px;
 }
 
+.record-days{
+    text-align: center;
+    padding: 4px;
+    margin: auto;
+}
+
+.record-day{
+    margin: 1pt;
+    display: inline;
+}
+
 .doc_spec{
     font-size: 15px;
 }

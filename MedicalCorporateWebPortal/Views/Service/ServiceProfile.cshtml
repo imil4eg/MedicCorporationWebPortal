@@ -1,7 +1,21 @@
-﻿
+﻿@model MedicalCorporateWebPortal.Models.ServiceViewModel
+
 @{
     ViewData["Title"] = "ServiceProfile";
 }
 
-<h2>ServiceProfile</h2>
+<h2>Профиль @Model.Name</h2>
+
+<div class="info_main_block">
+    <p class="info_top">Описание</p>
+    <p class="info_main">@Model.Descripition</p>
+</div>
+
+<br />
+
+@if (Model.Doctors.Count > 0)
+{
+    <h3>Врачи по услуге</h3>
+    @Html.Partial("~/Views/Shared/_DoctorsPartial.cshtml", Model.Doctors)
+}
 

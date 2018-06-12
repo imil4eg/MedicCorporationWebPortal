@@ -1,6 +1,8 @@
 ﻿using MedicalCorporateWebPortal.AppData;
 using MedicalCorporateWebPortal.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -92,6 +94,41 @@ namespace MedicalCorporateWebPortal.Controllers
 
             ViewBag.Message = "Услуга успешно удалена";
             return View("Info");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ServiceProfile(int serviceId)
+        {
+            Service service = await _context.Services.FindAsync(serviceId);
+            ServiceViewModel model = new ServiceViewModel
+            {
+                ServiceID = service.ServiceID,
+                Name = service.Name,
+                Descripition = service.Description,
+                Price = service.Price
+            };
+
+            DateTime beginingOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday);
+            DateTime endOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Friday);
+            model.Doctors = new List<DoctorViewModel>();
+            foreach (Doctor doctor in _context.Doctors.Where(d => _context.ProvideServices.Any(ps => ps.ServiceID == service.ServiceID && d.ID == ps.DoctorID)))
+            {
+                Employee employee = await _context.Employees.FindAsync(doctor.EmployeeID);
+                User user = await _context.Users.FindAsync(employee.UserID);
+                Specialty specialty = await _context.Specialties.FindAsync(doctor.SpecialtyID);
+                var datesOfAppointemnt = _context.AppointmentDates.Where(date => doctor.ID == date.DoctorID
+                                                            && date.Date >= beginingOfWeek && date.Date <= endOfWeek);
+
+                model.Doctors.Add(new DoctorViewModel
+                {
+                    Doctor = doctor,
+                    User = user,
+                    SpecialtyName = specialty.Name,
+                    DatesOfAppointment = datesOfAppointemnt
+                });
+            }
+
+            return View(model);
         }
     }
 }
