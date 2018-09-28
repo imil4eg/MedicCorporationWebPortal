@@ -1,5 +1,6 @@
 ﻿using MedicalCorporateWebPortal.AppData;
 using MedicalCorporateWebPortal.Models;
+using MedicalCorporateWebPortal.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,22 +12,22 @@ namespace MedicalCorporateWebPortal.Controllers
     [Authorize(Roles = "Администратор")]
     public class AdminController : Controller
     {
-        protected MedicCroporateContext _context;
+        protected IUnitOfWork _unitOfWork;
 
-        protected UserManager<User> _userManager;
+        protected UserManager<ApplicationUser> _userManager;
 
         protected RoleManager<ApplicationRole> _roleManager;
 
-        public AdminController(MedicCroporateContext context, UserManager<User> userManager, RoleManager<ApplicationRole> roleManager)
+        public AdminController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
-            _context = context;
+            this._unitOfWork = unitOfWork;
             _userManager = userManager;
             _roleManager = roleManager;
         }
 
         public IActionResult Users()
         {
-            var users = _context.Users.Where(u => !string.IsNullOrEmpty(u.Password));
+            var users = this._unitOfWork.Users.Find(u => !string.IsNullOrEmpty(u.Password));
 
             return View(users.ToList());
         }
@@ -34,7 +35,7 @@ namespace MedicalCorporateWebPortal.Controllers
         [HttpGet]
         public IActionResult UserProfile(string userName)
         {
-            var user = _context.Users.SingleOrDefault(u => u.UserName == userName);
+            var user = this._unitOfWork.Users.Find(u => u.UserName == userName).SingleOrDefault();
             
             if(user != null)
             {
@@ -87,7 +88,7 @@ namespace MedicalCorporateWebPortal.Controllers
                 await _userManager.RemovePasswordAsync(user);
                 user.UserName = string.Empty;
                 user.Password = string.Empty;
-                await _context.SaveChangesAsync();
+                this._unitOfWork.Save();
             }
 
             ViewBag.Message = "Пользователь удален успешно";
@@ -96,12 +97,12 @@ namespace MedicalCorporateWebPortal.Controllers
         }
 
         [NonAction]
-        public async Task ChangeUserRole(User user, UserRole changedRole)
+        public async Task ChangeUserRole(ApplicationUser user, UserRole changedRole)
         {
             if(user.Role == UserRole.Администратор || user.Role == UserRole.Бухгалтер || user.Role == UserRole.Ресепшен)
             {
-                var employee = _context.Employees.SingleOrDefault(e => e.UserID == user.Id);
-                var exisistDoctor = await _context.Doctors.FindAsync(employee.EmployeeID);
+                var employee = this._unitOfWork.Employees.Find(e => e.UserID == user.Id).SingleOrDefault();
+                var exisistDoctor = this._unitOfWork.Doctors.Get(employee.EmployeeID);
 
                 if (exisistDoctor == null && changedRole == UserRole.Врач)
                 {
@@ -109,7 +110,7 @@ namespace MedicalCorporateWebPortal.Controllers
                     {
                         EmployeeID = employee.EmployeeID,
                         Employee = employee,
-                        SpecialtyID = _context.Specialties.First().ID
+                        SpecialtyID = this._unitOfWork.Specialtys.GetAll().FirstOrDefault().ID
                     };
                 }
                 else if(exisistDoctor != null)
@@ -119,8 +120,8 @@ namespace MedicalCorporateWebPortal.Controllers
             }
             else if(user.Role == UserRole.Врач)
             {
-                var employee = _context.Employees.SingleOrDefault(e => e.UserID == user.Id);
-                var doctor = _context.Doctors.SingleOrDefault(d => d.EmployeeID == employee.EmployeeID);
+                var employee = this._unitOfWork.Employees.Find(e => e.UserID == user.Id).SingleOrDefault();
+                var doctor = this._unitOfWork.Doctors.Find(d => d.EmployeeID == employee.EmployeeID).SingleOrDefault();
                 doctor.IsDeleted = true;
             }
 
@@ -128,7 +129,7 @@ namespace MedicalCorporateWebPortal.Controllers
             user.Role = changedRole;
             await _userManager.AddToRoleAsync(user, changedRole.ToString());
             await _userManager.RemoveFromRoleAsync(user, role.ToString());
-            await _context.SaveChangesAsync();
+            this._unitOfWork.Save();
         }
     }
 }

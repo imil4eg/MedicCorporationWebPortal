@@ -6,13 +6,13 @@ using System.Linq;
 
 namespace MedicalCorporateWebPortal.AppData
 {
-    public class MedicCroporateContext : IdentityDbContext<User, ApplicationRole, Guid>
+    public class MedicCroporateContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>
     {
         public MedicCroporateContext(DbContextOptions<MedicCroporateContext> options) : base(options)
         {
         }
 
-        //public DbSet<User> Users { get; set; }
+        //public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
@@ -26,7 +26,8 @@ namespace MedicalCorporateWebPortal.AppData
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<User>().ToTable("User");
+
+            modelBuilder.Entity<ApplicationUser>().ToTable("User");
             modelBuilder.Entity<Patient>().ToTable("Patient");
             modelBuilder.Entity<Employee>().ToTable("Employee");
             modelBuilder.Entity<Doctor>().ToTable("Doctor");
@@ -36,6 +37,7 @@ namespace MedicalCorporateWebPortal.AppData
             modelBuilder.Entity<DateOfAppointment>().ToTable("DateOfAppointment");
             modelBuilder.Entity<ReservedTime>().ToTable("AppointmentTime");
             modelBuilder.Entity<Specialty>().ToTable("Specialty");
+
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;

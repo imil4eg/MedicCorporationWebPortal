@@ -1,30 +1,31 @@
-﻿using MedicalCorporateWebPortal.Models;
+﻿    using MedicalCorporateWebPortal.Models;
 using MedicalCorporateWebPortal.AppData;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using MedicalCorporateWebPortal.Repository;
 
 namespace MedicalCorporateWebPortal.Controllers
 {
     [Authorize]
     public class SecurityController : Controller
     {
-        protected MedicCroporateContext _context;
+        protected IUnitOfWork _unitOfWork;
 
         /// <summary>
         /// The manager for handling user creation, deletion, searching, roles
         /// </summary>
-        protected UserManager<User> _userManager;
+        protected UserManager<ApplicationUser> _userManager;
 
         /// <summary>
         /// The manager for handling sign in and out for our users 
         /// </summary>
-        protected SignInManager<User> _signInManager;
+        protected SignInManager<ApplicationUser> _signInManager;
 
-        public SecurityController(MedicCroporateContext context, UserManager<User> userManager, SignInManager<User> signInManager)
+        public SecurityController(UnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
         {
-            _context = context;
+            this._unitOfWork = unitOfWork;
             _userManager = userManager;
             _signInManager = signInManager;
         }
@@ -47,7 +48,7 @@ namespace MedicalCorporateWebPortal.Controllers
                 return View(model);
             }
 
-            User user = await _userManager.FindByNameAsync(model.UserName);
+            ApplicationUser user = await _userManager.FindByNameAsync(model.UserName);
             if(user == null)
             {
                 ViewBag.errorMessage = "Неверный логин или пароль";
@@ -102,7 +103,7 @@ namespace MedicalCorporateWebPortal.Controllers
 
             if (ModelState.IsValid)
             {
-                var result = await _userManager.CreateAsync(new User
+                var result = await _userManager.CreateAsync(new ApplicationUser
                 {
                     Email = model.Email,
                     UserName = model.Login,
@@ -124,10 +125,10 @@ namespace MedicalCorporateWebPortal.Controllers
                         var employee = new Employee
                         {
                             UserID = user.Id,
-                            User = user
+                            ApplicationUser = user
                         };
                         user.Role = UserRole.Ресепшен;
-                        await _context.Employees.AddAsync(employee);
+                        this._unitOfWork.Employees.Add(employee);
                         await _userManager.AddToRoleAsync(user, UserRole.Ресепшен.ToString());
                     }
                     else
@@ -135,16 +136,16 @@ namespace MedicalCorporateWebPortal.Controllers
                         var patient = new Patient
                         {
                             UserID = user.Id,
-                            User = user
+                            ApplicationUser = user
                         };
                         user.Role = UserRole.Пациент;
-                        await _context.Patients.AddAsync(patient);
+                        this._unitOfWork.Patients.Add(patient);
                         await _userManager.AddToRoleAsync(user, UserRole.Пациент.ToString());
                     }
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     ViewBag.Message = "Пользователь зарегистрирован";
-                    await _context.SaveChangesAsync();
+                    this._unitOfWork.Save();
                     return View("Info");
                 }
                 else

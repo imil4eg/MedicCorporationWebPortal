@@ -9,13 +9,13 @@
         <div>
             <ul class="emp_info_spec">
                 <li><img class="doc_img" src="~/images/default-user-image.png" alt="avatar" width="100%" height="100%" /></li>
-                <li class="name">@string.Format("{0} {1}", Model.User.LastName, Model.User.FirstName)</li>
+                <li class="name">@string.Format("{0} {1}", Model.ApplicationUser.LastName, Model.ApplicationUser.FirstName)</li>
                 <li class="spec">@Model.SpecialtyName</li>
             </ul>
             @*<img src="~/images/default-user-image.png" alt="avatar" width="100" height="75" />*@
         </div>
         @*<div class="inline">
-                <h1>@string.Format("{0} {1}", Model.User.LastName, Model.User.FirstName)</h1>
+                <h1>@string.Format("{0} {1}", Model.ApplicationUser.LastName, Model.ApplicationUser.FirstName)</h1>
                 <b>@Model.SpecialtyName</b>
             </div>*@
         @if (Model.DatesOfAppointment.Count() > 0)

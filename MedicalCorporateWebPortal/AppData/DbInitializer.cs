@@ -8,7 +8,7 @@ namespace MedicalCorporateWebPortal.AppData
 {
     public static class DbInitializer
     {
-        public async static Task Initialize(MedicCroporateContext context, UserManager<User> userManager, RoleManager<ApplicationRole> roleManager)
+        public async static Task Initialize(MedicCroporateContext context, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
             context.Database.EnsureCreated();
 
@@ -29,7 +29,7 @@ namespace MedicalCorporateWebPortal.AppData
                 }
             }
 
-            var powerUser = new User
+            var powerUser = new ApplicationUser
             {
                 UserName = "Admin",
                 Password = "Admin",
@@ -39,7 +39,7 @@ namespace MedicalCorporateWebPortal.AppData
                 FirstName = "Admin"
             };
 
-            var userPatient = new User
+            var userPatient = new ApplicationUser
             {
                 UserName = "Patient",
                 Password = "Patient",
@@ -50,7 +50,7 @@ namespace MedicalCorporateWebPortal.AppData
                 Role = UserRole.Пациент
             };
 
-            var userDoctor = new User
+            var userDoctor = new ApplicationUser
             {
                 UserName = "Doctor",
                 Password = "Doctor",
@@ -61,7 +61,7 @@ namespace MedicalCorporateWebPortal.AppData
                 Role = UserRole.Врач
             };
 
-            var userCalculator = new User
+            var userCalculator = new ApplicationUser
             {
                 UserName = "Calcuc",
                 Password = "Calcuc",
@@ -83,7 +83,7 @@ namespace MedicalCorporateWebPortal.AppData
                     var employee = new Employee
                     {
                         UserID = user.Id,
-                        User = user
+                        ApplicationUser = user
                     };
 
                     await context.Employees.AddAsync(employee);
@@ -101,7 +101,7 @@ namespace MedicalCorporateWebPortal.AppData
                     var patient = new Patient
                     {
                         UserID = user.Id,
-                        User = user
+                        ApplicationUser = user
                     };
 
                     await context.Patients.AddAsync(patient);
@@ -118,7 +118,7 @@ namespace MedicalCorporateWebPortal.AppData
                     var user = await userManager.FindByNameAsync(userCalculator.UserName);
                     var employee = new Employee
                     {
-                        User = user,
+                        ApplicationUser = user,
                         UserID = user.Id
                     };
 
@@ -142,14 +142,14 @@ namespace MedicalCorporateWebPortal.AppData
 
             context.SaveChanges();
 
-            var users = new User[]
+            var users = new ApplicationUser[]
             {
-                new User{Id = Guid.NewGuid(), Email = "pupkin@mail.ru", UserName = "qwerty", Password = "qwerty", LastName = "Пупкин", FirstName = "Вася", MiddleName = "Васильевич", Gender = Gender.Мужской, Role = UserRole.Врач},
-                new User{Id = Guid.NewGuid(), Email = "Vasiliev@mail.ru", UserName = "qwerty1", Password = "qwerty1", LastName = "Васильев", FirstName = "Вася", MiddleName = "Васильевич", Gender = Gender.Мужской, Role = UserRole.Врач},
-                new User{Id = Guid.NewGuid(), Email = "Ilin@mail.ru", UserName = "qwerty2", Password = "qwerty2", LastName = "Ильин", FirstName = "Илья", MiddleName = "Ильич", Gender = Gender.Мужской, Role = UserRole.Врач},
-                new User{Id = Guid.NewGuid(), Email = "Petyaev@mail.ru", UserName = "qwerty3", Password = "qwerty3", LastName = "Петяев", FirstName = "Петя", MiddleName = "Петькович", Gender = Gender.Мужской, Role = UserRole.Врач}
+                new ApplicationUser{Id = Guid.NewGuid(), Email = "pupkin@mail.ru", UserName = "qwerty", Password = "qwerty", LastName = "Пупкин", FirstName = "Вася", MiddleName = "Васильевич", Gender = Gender.Мужской, Role = UserRole.Врач},
+                new ApplicationUser{Id = Guid.NewGuid(), Email = "Vasiliev@mail.ru", UserName = "qwerty1", Password = "qwerty1", LastName = "Васильев", FirstName = "Вася", MiddleName = "Васильевич", Gender = Gender.Мужской, Role = UserRole.Врач},
+                new ApplicationUser{Id = Guid.NewGuid(), Email = "Ilin@mail.ru", UserName = "qwerty2", Password = "qwerty2", LastName = "Ильин", FirstName = "Илья", MiddleName = "Ильич", Gender = Gender.Мужской, Role = UserRole.Врач},
+                new ApplicationUser{Id = Guid.NewGuid(), Email = "Petyaev@mail.ru", UserName = "qwerty3", Password = "qwerty3", LastName = "Петяев", FirstName = "Петя", MiddleName = "Петькович", Gender = Gender.Мужской, Role = UserRole.Врач}
             };
-            foreach (User u in users)
+            foreach (ApplicationUser u in users)
             {
                 context.Users.Add(u);
                 await userManager.CreateAsync(u, u.Password);

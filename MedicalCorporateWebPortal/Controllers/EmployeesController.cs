@@ -1,5 +1,6 @@
 ﻿using MedicalCorporateWebPortal.AppData;
 using MedicalCorporateWebPortal.Models;
+using MedicalCorporateWebPortal.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -11,32 +12,33 @@ namespace MedicalCorporateWebPortal.Controllers
 {
     public class EmployeeController : Controller
     {
-        protected MedicCroporateContext _context;
+        protected IUnitOfWork _unitOfWork;
 
-        protected UserManager<User> _userManager;
+        protected UserManager<ApplicationUser> _userManager;
 
         protected RoleManager<ApplicationRole> _roleManager;
 
-        public EmployeeController(MedicCroporateContext contex, UserManager<User> userManager, RoleManager<ApplicationRole> roleManager)
+        public EmployeeController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
-            _context = contex;
+            this._unitOfWork = unitOfWork;
             _userManager = userManager;
             _roleManager = roleManager;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Employees()
+        public IActionResult Employees()
         {
-            var doctors = _context.Doctors.Where(d => !d.IsDeleted);
+            var doctors = this._unitOfWork.Doctors.Find(d => !d.IsDeleted);
             List<EmployeeViewModel> models = new List<EmployeeViewModel>();
             foreach (Doctor doctor in doctors)
             {
-                Employee employee = await _context.Employees.FindAsync(doctor.EmployeeID);
-                User user = await _context.Users.FindAsync(employee.UserID);
-                Specialty specialty = await _context.Specialties.FindAsync(doctor.SpecialtyID);
-                var workedDates = _context.AppointmentDates.Where(date => date.DoctorID == doctor.ID && date.Date.Month == DateTime.Today.Month);
+                Employee employee = this._unitOfWork.Employees.Get(doctor.EmployeeID);
+                ApplicationUser user = this._unitOfWork.Users.Get(employee.UserID);
+                Specialty specialty = this._unitOfWork.Specialtys.Get(doctor.SpecialtyID);
+                var workedDates = this._unitOfWork.DatesOfAppointments
+                    .Find(date => date.DoctorID == doctor.ID && date.Date.Month == DateTime.Today.Month);
                 int workedTime = 0;
-                foreach(DateOfAppointment date in workedDates)
+                foreach (DateOfAppointment date in workedDates)
                 {
                     string[] time = date.PeriodOfWorking.Split('-');
                     workedTime += int.Parse(time[1]) - int.Parse(time[0]);

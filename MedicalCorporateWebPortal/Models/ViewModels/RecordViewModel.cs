@@ -4,7 +4,7 @@ namespace MedicalCorporateWebPortal.Models
 {
     public class RecordViewModel
     {
-        public User User { get; set; }
+        public ApplicationUser ApplicationUser { get; set; }
 
         public Doctor Doctor { get; set; }
 

@@ -49,9 +49,9 @@
                 <div class="doc_item">
                     <img class="doc_img" src="~/images/default-user-image.png" alt="avatar" width="100" height="75" />
                     <div class="doc_name">
-                        <a href="@Url.Action("DoctorProfile","Doctor", new { @userName = Model[i].User.UserName })">
+                        <a href="@Url.Action("DoctorProfile","Doctor", new { @userName = Model[i].ApplicationUser.UserName })">
                             <span>
-                                @string.Format("{0} {1}", Model[i].User.LastName, Model[i].User.FirstName)
+                                @string.Format("{0} {1}", Model[i].ApplicationUser.LastName, Model[i].ApplicationUser.FirstName)
                             </span>
                         </a>
                         <div class="doc_spec">
@@ -85,9 +85,9 @@
                     </tr>
                     <tr>
                         <td>
-                            <a href="@Url.Action("DoctorProfile","Doctor", new { @userName = Model[i].User.UserName })">
+                            <a href="@Url.Action("DoctorProfile","Doctor", new { @userName = Model[i].ApplicationUser.UserName })">
                                 <span>
-                                    @string.Format("{0} {1}", Model[i].User.LastName, Model[i].User.FirstName)
+                                    @string.Format("{0} {1}", Model[i].ApplicationUser.LastName, Model[i].ApplicationUser.FirstName)
                                 </span>
                             </a>
                         </td>

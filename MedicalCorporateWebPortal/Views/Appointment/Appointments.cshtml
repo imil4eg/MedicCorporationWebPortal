@@ -11,7 +11,7 @@
 }
 @using (Html.BeginForm("", "", FormMethod.Get))
 {
-    @if (User.IsInRole(UserRole.Врач.ToString()))
+    @if (ApplicationUser.IsInRole(UserRole.Врач.ToString()))
     {
         <table class="table">
             <tr>
@@ -34,7 +34,7 @@
             }
         </table>
     }
-    else if (User.IsInRole(UserRole.Пациент.ToString()))
+    else if (ApplicationUser.IsInRole(UserRole.Пациент.ToString()))
     {
         <table class="table">
             <tr>

@@ -1,5 +1,5 @@
-﻿using MedicalCorporateWebPortal.AppData;
-using MedicalCorporateWebPortal.Models;
+﻿using MedicalCorporateWebPortal.Models;
+using MedicalCorporateWebPortal.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -8,15 +8,15 @@ namespace MedicalCorporateWebPortal.Controllers
 {
     public class ProfileController : Controller
     {
-        protected MedicCroporateContext _context;
+        protected IUnitOfWork _unitOfWork;
 
-        protected UserManager<User> _userManager;
+        protected UserManager<ApplicationUser> _userManager;
 
         protected RoleManager<ApplicationRole> _roleManager;
 
-        public ProfileController(MedicCroporateContext context, UserManager<User> userManager, RoleManager<ApplicationRole> roleManager)
+        public ProfileController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
-            _context = context;
+            this._unitOfWork = unitOfWork;
             _userManager = userManager;
             _roleManager = roleManager;
         }
@@ -40,7 +40,7 @@ namespace MedicalCorporateWebPortal.Controllers
 
                 if (user.Role == UserRole.Пациент)
                 {
-                    var patient = await _context.Patients.FindAsync(user.Id);
+                    var patient = this._unitOfWork.Patients.Get(user.Id);
 
                     model.Address = patient.Address;
                     model.SNILS = patient.SNILS;
@@ -76,7 +76,7 @@ namespace MedicalCorporateWebPortal.Controllers
 
                 if(user.Role == UserRole.Пациент)
                 {
-                    var patient = await _context.Patients.FindAsync(user.Id);
+                    var patient = this._unitOfWork.Patients.Get(user.Id);
                     model.Address = patient.Address;
                     model.SNILS = patient.SNILS;
                     model.InsuranceCompany = patient.InsuranceCompany;
@@ -112,7 +112,7 @@ namespace MedicalCorporateWebPortal.Controllers
                 user.Gender = model.Gender;
                 if(user.Role == UserRole.Пациент)
                 {
-                    var patient = await _context.Patients.FindAsync(user.Id);
+                    var patient = this._unitOfWork.Patients.Get(user.Id);
                     patient.Address = model.Address;
                     patient.PassportSeries = model.PassportSeries;
                     patient.PassportNumber = model.PassportNumber;
@@ -123,7 +123,7 @@ namespace MedicalCorporateWebPortal.Controllers
             }
 
             await _userManager.UpdateAsync(user);
-            await _context.SaveChangesAsync();
+            this._unitOfWork.Save();
             ViewBag.Message = "Пользователь успешно изменен";
             return View("Info");
         }

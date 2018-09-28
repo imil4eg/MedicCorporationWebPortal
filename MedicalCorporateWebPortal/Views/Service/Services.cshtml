@@ -15,7 +15,7 @@
 <div class="info_main_block">
     <p class="info_top">Усугли и цены</p>
 
-    @if (User.IsInRole(UserRole.Администратор.ToString()))
+    @if (ApplicationUser.IsInRole(UserRole.Администратор.ToString()))
     {
         @Html.ActionLink("Добавить", "CreateService", "Service", null, new { @class = "btn btn-success" })
     }
@@ -26,7 +26,7 @@
             <tr>
                 <td>@Html.ActionLink(service.Name, "ServiceProfile", "Service", new { @serviceId = service.ServiceID })</td>
                 <td>@string.Format("{0} руб.", service.Price)</td>
-                @if (User.IsInRole(UserRole.Администратор.ToString()))
+                @if (ApplicationUser.IsInRole(UserRole.Администратор.ToString()))
                 {
                     <td>@Html.ActionLink("Изменить", "EditService", "Service", new { @serviceId = service.ServiceID }, new { @class = "btn btn-primary" })</td>
                     <td>@Html.ActionLink("Удалить", "", "", null, new { @class = "btn btn-danger" })</td>

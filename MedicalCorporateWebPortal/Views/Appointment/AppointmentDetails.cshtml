@@ -6,7 +6,7 @@
 
 <h2>@ViewBag.Message</h2>
 
-@if (User.IsInRole(UserRole.Врач.ToString()))
+@if (ApplicationUser.IsInRole(UserRole.Врач.ToString()))
 {
     @using (Html.BeginForm("EditAppointment", "Appointment", FormMethod.Post))
     {
@@ -24,7 +24,7 @@
         <input type="submit" value="Сохранить" class="btn btn-success" />
     }
 }
-else if (User.IsInRole(UserRole.Пациент.ToString()))
+else if (ApplicationUser.IsInRole(UserRole.Пациент.ToString()))
 {
     @using (Html.BeginForm("", "", FormMethod.Get))
     {

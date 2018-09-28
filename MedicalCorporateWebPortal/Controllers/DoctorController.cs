@@ -6,28 +6,29 @@ using System.Linq;
 using MedicalCorporateWebPortal.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
+using MedicalCorporateWebPortal.Repository;
 
 namespace MedicalCorporateWebPortal.Controllers
 {
     public class DoctorController : Controller
     {
-        private readonly MedicCroporateContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        protected UserManager<User> _userManager;
+        protected UserManager<ApplicationUser> _userManager;
 
         protected RoleManager<ApplicationRole> _roleManager;
 
-        public DoctorController(MedicCroporateContext context, UserManager<User> userManager, RoleManager<ApplicationRole> roleManager)
+        public DoctorController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
-            _context = context;
+            this._unitOfWork = unitOfWork;
             _userManager = userManager;
             _roleManager = roleManager;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Doctors()
+        public IActionResult Doctors()
         {
-            var doctors = _context.Doctors.Where(d => !d.IsDeleted);
+            var doctors = this._unitOfWork.Doctors.GetAll(); //Where(d => !d.IsDeleted);
 
             var models = new List<DoctorViewModel>();
 
@@ -35,21 +36,21 @@ namespace MedicalCorporateWebPortal.Controllers
             DateTime endOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Friday);
             foreach (var doctor in doctors)
             {
-                var employee = await _context.Employees.FindAsync(doctor.EmployeeID);
-                var user = await _context.Users.FindAsync(employee.UserID);
-                var dates = _context.AppointmentDates.Where(date => doctor.ID == date.DoctorID
+                var employee = this._unitOfWork.Employees.Get(doctor.EmployeeID); //.FindAsync(doctor.EmployeeID);
+                var user = this._unitOfWork.Users.Get(employee.UserID);
+                var dates = this._unitOfWork.DatesOfAppointments.Find(date => doctor.ID == date.DoctorID
                                                             && date.Date >= beginingOfWeek && date.Date <= endOfWeek);
 
-                var specialty = await _context.Specialties.FindAsync(doctor.SpecialtyID);
+                var specialty = this._unitOfWork.Specialtys.Get(doctor.SpecialtyID);
                 models.Add(new DoctorViewModel
                 {
-                    User = user,
+                    ApplicationUser = user,
                     Doctor = doctor,
                     DatesOfAppointment = dates.OrderBy(d => d.Date),
                     SpecialtyName = specialty.Name
                 });
                 //List<string> AppointmentDates = new List<string>();
-                //var dates = _context.AppointmentDates.Where(date => users.Any(u => date.DoctorID == doctor.ID));
+                //var dates = this._unitOfWork.AppointmentDates.Where(date => users.Any(u => date.DoctorID == doctor.ID));
                 //if (dates.Count() > 0)
                 //{
                 //    foreach (var date in dates)
@@ -60,7 +61,7 @@ namespace MedicalCorporateWebPortal.Controllers
 
                 //models.Add(new DoctorViewModel
                 //{
-                //    User = users.SingleOrDefault(u => doctors.Where())
+                //    ApplicationUser = users.SingleOrDefault(u => doctors.Where())
                 //}
             }
             return View(models);
@@ -72,14 +73,14 @@ namespace MedicalCorporateWebPortal.Controllers
             var user = await _userManager.FindByNameAsync(userName);
             if (user != null)
             {
-                var employee = _context.Employees.SingleOrDefault(e => e.UserID == user.Id);
-                var doctor = _context.Doctors.SingleOrDefault(d => d.EmployeeID == employee.EmployeeID);
-                var appoitmentDate = _context.AppointmentDates.Where(date => date.DoctorID == doctor.ID);
-                var provideServeces = _context.ProvideServices.Where(ps => ps.DoctorID == doctor.ID);
-                var speciality = await _context.Specialties.FindAsync(doctor.SpecialtyID);
+                var employee = this._unitOfWork.Employees.Find(e => e.UserID == user.Id).SingleOrDefault();
+                var doctor = this._unitOfWork.Doctors.Find(d => d.EmployeeID == employee.EmployeeID).SingleOrDefault();
+                var appoitmentDate = this._unitOfWork.DatesOfAppointments.Find(date => date.DoctorID == doctor.ID);
+                var provideServeces = this._unitOfWork.DoctorProvideServices.Find(ps => ps.DoctorID == doctor.ID);
+                var speciality = this._unitOfWork.Specialtys.Get(doctor.SpecialtyID);
                 var model = new DoctorViewModel
                 {
-                    User = user,
+                    ApplicationUser = user,
                     Doctor = doctor,
                     ProvideServices = provideServeces,
                     DatesOfAppointment = appoitmentDate,
@@ -97,16 +98,17 @@ namespace MedicalCorporateWebPortal.Controllers
             var user = await _userManager.GetUserAsync(HttpContext.User);
             if(user.Role == UserRole.Врач)
             {
-                var employee = _context.Employees.SingleOrDefault(e => e.UserID == user.Id);
-                var doctor = _context.Doctors.FirstOrDefault(d => d.EmployeeID == employee.EmployeeID);
-                var todayAppointment = _context.AppointmentDates.SingleOrDefault(date => date.DoctorID == doctor.ID && date.Date == DateTime.Today);
-                var recordedAppoitment = _context.Appointments.Where(date => DateTime.Compare(date.Date.Date, DateTime.Today) == 0);
-                var reservedTimes = _context.AppoitmentReservedTime.Where(rt => rt.DateOfAppointmentID == todayAppointment.DateOfAppointmentID && !recordedAppoitment.Any(ra => ra.PatientId == rt.UserID));
+                var employee = this._unitOfWork.Employees.Find(e => e.UserID == user.Id).SingleOrDefault();
+                var doctor = this._unitOfWork.Doctors.Find(d => d.EmployeeID == employee.EmployeeID).FirstOrDefault();
+                var todayAppointment = this._unitOfWork.DatesOfAppointments.Find(date => date.DoctorID == doctor.ID && date.Date == DateTime.Today).SingleOrDefault();
+                var recordedAppoitment = this._unitOfWork.Appointments.Find(date => DateTime.Compare(date.Date.Date, DateTime.Today) == 0);
+                var reservedTimes = this._unitOfWork.ReservedTimes.Find(rt => 
+                        rt.DateOfAppointmentID == todayAppointment.DateOfAppointmentID && !recordedAppoitment.Any(ra => ra.PatientId == rt.UserID));
                 List<PatientRecordViewModel> models = new List<PatientRecordViewModel>();
                 foreach (var reserved in reservedTimes)
                 {
-                    var service = await _context.Services.FindAsync(reserved.ServiceID);
-                    var reservedUser = await _context.Users.FindAsync(reserved.UserID);
+                    var service = this._unitOfWork.Services.Get(reserved.ServiceID);
+                    var reservedUser = this._unitOfWork.Users.Get(reserved.UserID);
 
                     models.Add(new PatientRecordViewModel
                     {
@@ -128,12 +130,12 @@ namespace MedicalCorporateWebPortal.Controllers
         public async Task<IActionResult> Appointment(string userId, int serviceId, int reservedTimeId)
         {
             var patientUser = await _userManager.FindByIdAsync(userId);
-            var patient = await _context.Patients.FindAsync(patientUser.Id);
+            var patient = this._unitOfWork.Patients.Get(patientUser.Id);
             var doctorUser = await _userManager.GetUserAsync(HttpContext.User);
-            var employee = _context.Employees.FirstOrDefault(e => e.UserID == doctorUser.Id);
-            var doctor = _context.Doctors.FirstOrDefault(d => d.EmployeeID == employee.EmployeeID);
-            var service = await _context.Services.FindAsync(serviceId);
-            var reservedTime = await _context.AppoitmentReservedTime.FindAsync(reservedTimeId);
+            var employee = this._unitOfWork.Employees.Find(e => e.UserID == doctorUser.Id).FirstOrDefault();
+            var doctor = this._unitOfWork.Doctors.Find(d => d.EmployeeID == employee.EmployeeID).FirstOrDefault();
+            var service = this._unitOfWork.Services.Get(serviceId);
+            var reservedTime = this._unitOfWork.ReservedTimes.Get(reservedTimeId);
 
             AppoitmentViewModel model = new AppoitmentViewModel
             {
@@ -155,10 +157,10 @@ namespace MedicalCorporateWebPortal.Controllers
                 return View(model);
             }
 
-            var doctor = await _context.Doctors.FindAsync(model.DoctorId);
-            var patient = await _context.Patients.FindAsync(model.PatientId);
-            var service = await _context.Services.FindAsync(model.ServiceID);
-            var reservedTime = await _context.AppoitmentReservedTime.FindAsync(model.ReservedTimeID);
+            var doctor = this._unitOfWork.Doctors.Get(model.DoctorId);
+            var patient = this._unitOfWork.Patients.Get(model.PatientId);
+            var service = this._unitOfWork.Services.Get(model.ServiceID);
+            var reservedTime = this._unitOfWork.ReservedTimes.Get(model.ReservedTimeID);
 
             Appointment appointment = new Appointment
             {
@@ -173,8 +175,8 @@ namespace MedicalCorporateWebPortal.Controllers
                 Result = model.Result
             };
 
-            await _context.Appointments.AddAsync(appointment);
-            await _context.SaveChangesAsync();
+            this._unitOfWork.Appointments.Add(appointment);
+            this._unitOfWork.Save();
 
             ViewBag.Message = "Сохранено успешно";
             return View("Info");
@@ -186,9 +188,10 @@ namespace MedicalCorporateWebPortal.Controllers
             var user = await _userManager.GetUserAsync(HttpContext.User);
             if (User.IsInRole(UserRole.Врач.ToString()))
             {
-                Employee employee = _context.Employees.FirstOrDefault(e => e.UserID == user.Id);
-                Doctor doctor = _context.Doctors.FirstOrDefault(d => d.EmployeeID == employee.EmployeeID);
-                var appointmentsDates = _context.AppointmentDates.Where(date => date.DoctorID == doctor.ID && DateTime.Compare(date.Date, DateTime.Today) >= 1).OrderBy(date => date.Date).ToList();
+                Employee employee = this._unitOfWork.Employees.Find(e => e.UserID == user.Id).FirstOrDefault();
+                Doctor doctor = this._unitOfWork.Doctors.Find(d => d.EmployeeID == employee.EmployeeID).FirstOrDefault();
+                var appointmentsDates = this._unitOfWork.DatesOfAppointments.Find(date =>
+                        date.DoctorID == doctor.ID && DateTime.Compare(date.Date, DateTime.Today) >= 1).OrderBy(date => date.Date).ToList();
                 return View(appointmentsDates);
             }
 
@@ -202,7 +205,7 @@ namespace MedicalCorporateWebPortal.Controllers
             ViewBag.Message = "Создание даты приема";
             if (appointmentDateId != 0)
             {
-                DateOfAppointment date = await _context.AppointmentDates.FindAsync(appointmentDateId);
+                DateOfAppointment date = this._unitOfWork.DatesOfAppointments.Get(appointmentDateId);
                 string[] values = date.PeriodOfWorking.Split('-');
                 model = new AppointmentDateViewModel
                 {
@@ -233,11 +236,13 @@ namespace MedicalCorporateWebPortal.Controllers
             }
 
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            var employee = _context.Employees.FirstOrDefault(e => e.UserID == user.Id);
-            var doctor = _context.Doctors.FirstOrDefault(d => d.EmployeeID == employee.EmployeeID);
+            var employee = this._unitOfWork.Employees.Find(e => e.UserID == user.Id).FirstOrDefault();
+            var doctor = this._unitOfWork.Doctors.Find(d => d.EmployeeID == employee.EmployeeID).FirstOrDefault();
             if(model.AppointmentDateId == 0)
             {
-                var existDate = _context.AppointmentDates.SingleOrDefault(d => d.DoctorID == doctor.ID && DateTime.Compare(d.Date, model.Date) == 0);
+                var existDate = this._unitOfWork.DatesOfAppointments
+                    .Find(d => d.DoctorID == doctor.ID && DateTime.Compare(d.Date, model.Date) == 0)
+                    .SingleOrDefault();
 
                 if (existDate == null)
                 {
@@ -248,7 +253,7 @@ namespace MedicalCorporateWebPortal.Controllers
                         PeriodOfWorking = string.Format("{0}-{1}", model.StartOfWork, model.EndOfWork)
                     };
                     ViewBag.Message = "Дата приема создана";
-                    await _context.AppointmentDates.AddAsync(date);
+                    this._unitOfWork.DatesOfAppointments.Add(date);
                 }
                 else
                 {
@@ -257,27 +262,32 @@ namespace MedicalCorporateWebPortal.Controllers
             }
             else
             {
-                DateOfAppointment date = await _context.AppointmentDates.FindAsync(model.AppointmentDateId);
+                DateOfAppointment date = this._unitOfWork.DatesOfAppointments.Get(model.AppointmentDateId);
                 date.Date = model.Date;
                 date.PeriodOfWorking = string.Format("{0}-{1}", model.StartOfWork, model.EndOfWork);
                 ViewBag.Message = "Дата приема успешно изменена";
             }
 
-            await _context.SaveChangesAsync();
+            this._unitOfWork.Save();
             return View("Info");
         }
 
         [HttpGet]
         public async Task<IActionResult> Patients(int doctorId, DateTime date, int serviceId)
         {
-            var appointment = _context.AppointmentDates.FirstOrDefault(d => d.Date == DateTime.Today);
+            var appointment = this._unitOfWork.DatesOfAppointments
+                .Find(d => d.Date == DateTime.Today)
+                .FirstOrDefault();
+
             if(appointment != null)
             {
                 List<PatientViewModel> models = new List<PatientViewModel>();
-                var reservedTimes = _context.AppoitmentReservedTime.Where(rt => rt.DateOfAppointmentID == appointment.DateOfAppointmentID);
-                foreach(var patient in _context.Patients)
+                var reservedTimes = this._unitOfWork.ReservedTimes
+                    .Find(rt => rt.DateOfAppointmentID == appointment.DateOfAppointmentID);
+
+                foreach (var patient in this._unitOfWork.Patients.GetAll())
                 {
-                    var user = await _context.Users.FindAsync(patient.UserID);
+                    var user = this._unitOfWork.Users.Get(patient.UserID);
                     models.Add(new PatientViewModel
                     {
                         PatientId = patient.UserID,
@@ -298,21 +308,23 @@ namespace MedicalCorporateWebPortal.Controllers
         public async Task<IActionResult> DoctorPatientRecordConform(Guid patientId, int doctorId, DateTime date, int serviceId)
         {
             var user = await _userManager.FindByIdAsync(patientId.ToString());
-            var appointmentDate = _context.AppointmentDates.FirstOrDefault(d => d.DoctorID == doctorId && d.Date.Date == date.Date);
-            var service = await _context.Services.FindAsync(serviceId);
+            var appointmentDate = this._unitOfWork.DatesOfAppointments
+                .Find(d => d.DoctorID == doctorId && d.Date.Date == date.Date)
+                .FirstOrDefault();
+            var service = this._unitOfWork.Services.Get(serviceId);
             var reserve = new ReservedTime
             {
                 DateOfAppointmentID = appointmentDate.DateOfAppointmentID,
                 DateOfAppointment = appointmentDate,
                 UserID = user.Id,
-                User = user,
+                ApplicationUser = user,
                 ServiceID = service.ServiceID,
                 Service = service,
                 Time = date
             };
 
-            await _context.AppoitmentReservedTime.AddAsync(reserve);
-            await _context.SaveChangesAsync();
+            this._unitOfWork.ReservedTimes.Add(reserve);
+            this._unitOfWork.Save();
             ViewBag.Message = "Пациент успешно записан";
             return View("Info");
         }

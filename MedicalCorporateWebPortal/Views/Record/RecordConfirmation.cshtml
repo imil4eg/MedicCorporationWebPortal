@@ -37,7 +37,7 @@
             </div>
         </div>
     </div>
-    @if (!User.Identity.IsAuthenticated)
+    @if (!ApplicationUser.Identity.IsAuthenticated)
     {
         <div class="record-confirm-contrls-block form-horizontal">
             <h3>Контактные данные</h3>
@@ -75,13 +75,13 @@
             </div>
         </div>
     }
-    @if (User.IsInRole(UserRole.Врач.ToString()))
+    @if (ApplicationUser.IsInRole(UserRole.Врач.ToString()))
     {
         <div class="record-confirm-contrls-block">
             @Html.ActionLink("Записать пациента", "Patients", "Doctor", new { @doctorId = Model.DoctorID, @date = Model.Date, @serviceId = Model.ServiceID }, new { @class = "btn btn-success btn-sx" })
         </div>
     }
-    else if (User.IsInRole(UserRole.Пациент.ToString()))
+    else if (ApplicationUser.IsInRole(UserRole.Пациент.ToString()))
     {
         <div class="record-confirm-contrls-block" style="background-color:none;">
             <input type="submit" class="btn btn-success" value="Записаться" />

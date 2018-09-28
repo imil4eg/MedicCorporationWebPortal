@@ -1,5 +1,5 @@
-﻿using MedicalCorporateWebPortal.AppData;
-using MedicalCorporateWebPortal.Models;
+﻿using MedicalCorporateWebPortal.Models;
+using MedicalCorporateWebPortal.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -10,17 +10,17 @@ namespace MedicalCorporateWebPortal.Controllers
 {
     public class ServiceController : Controller
     {
-        private readonly MedicCroporateContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ServiceController(MedicCroporateContext context)
+        public ServiceController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            this._unitOfWork = unitOfWork;
         }
 
         [HttpGet]
         public IActionResult Services()
         {
-            var services = _context.Services.Where(s => !s.IsDeleted);
+            var services = this._unitOfWork.Services.Find(s => !s.IsDeleted);
 
             return View(services);
         }
@@ -34,7 +34,7 @@ namespace MedicalCorporateWebPortal.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateService(ServiceViewModel model)
+        public IActionResult CreateService(ServiceViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -47,17 +47,17 @@ namespace MedicalCorporateWebPortal.Controllers
                 Price = model.Price
             };
 
-            await _context.Services.AddAsync(service);
-            await _context.SaveChangesAsync();
+            this._unitOfWork.Services.Add(service);
+            this._unitOfWork.Save();
 
             ViewBag.Message = "Услуга успешно создана";
             return View("Info");
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditService(int serviceId)
+        public IActionResult EditService(int serviceId)
         {
-            var service = await _context.Services.FindAsync(serviceId);
+            var service = this._unitOfWork.Services.Get(serviceId);
             var model = new ServiceViewModel
             {
                 ServiceID = service.ServiceID,
@@ -69,37 +69,37 @@ namespace MedicalCorporateWebPortal.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditService(ServiceViewModel model)
+        public IActionResult EditService(ServiceViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            var service = await _context.Services.FindAsync(model.ServiceID);
+            var service = this._unitOfWork.Services.Get(model.ServiceID);
             service.Name = model.Name;
             service.Price = model.Price;
-            await _context.SaveChangesAsync();
+            this._unitOfWork.Save();
 
             ViewBag.Message = "Услуга успешно изменена";
             return View("Info");
         }
 
         [HttpGet]
-        public async Task<IActionResult> DeleteService(int serviceId)
+        public IActionResult DeleteService(int serviceId)
         {
-            var service = await _context.Services.FindAsync(serviceId);
+            var service = this._unitOfWork.Services.Get(serviceId);
             service.IsDeleted = true;
-            await _context.SaveChangesAsync();
+            this._unitOfWork.Save();
 
             ViewBag.Message = "Услуга успешно удалена";
             return View("Info");
         }
 
         [HttpGet]
-        public async Task<IActionResult> ServiceProfile(int serviceId)
+        public IActionResult ServiceProfile(int serviceId)
         {
-            Service service = await _context.Services.FindAsync(serviceId);
+            Service service = this._unitOfWork.Services.Get(serviceId);
             ServiceViewModel model = new ServiceViewModel
             {
                 ServiceID = service.ServiceID,
@@ -111,18 +111,20 @@ namespace MedicalCorporateWebPortal.Controllers
             DateTime beginingOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Monday);
             DateTime endOfWeek = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + (int)DayOfWeek.Friday);
             model.Doctors = new List<DoctorViewModel>();
-            foreach (Doctor doctor in _context.Doctors.Where(d => _context.ProvideServices.Any(ps => ps.ServiceID == service.ServiceID && d.ID == ps.DoctorID)))
+            foreach (Doctor doctor in this._unitOfWork.Doctors
+                .Find(d => this._unitOfWork.DoctorProvideServices.Find(ps => ps.ServiceID == service.ServiceID && d.ID == ps.DoctorID).Any()))
             {
-                Employee employee = await _context.Employees.FindAsync(doctor.EmployeeID);
-                User user = await _context.Users.FindAsync(employee.UserID);
-                Specialty specialty = await _context.Specialties.FindAsync(doctor.SpecialtyID);
-                var datesOfAppointemnt = _context.AppointmentDates.Where(date => doctor.ID == date.DoctorID
+                Employee employee = this._unitOfWork.Employees.Get(doctor.EmployeeID);
+                ApplicationUser user = this._unitOfWork.Users.Get(employee.UserID);
+                Specialty specialty = this._unitOfWork.Specialtys.Get(doctor.SpecialtyID);
+                var datesOfAppointemnt = this._unitOfWork.DatesOfAppointments
+                    .Find(date => doctor.ID == date.DoctorID
                                                             && date.Date >= beginingOfWeek && date.Date <= endOfWeek);
 
                 model.Doctors.Add(new DoctorViewModel
                 {
                     Doctor = doctor,
-                    User = user,
+                    ApplicationUser = user,
                     SpecialtyName = specialty.Name,
                     DatesOfAppointment = datesOfAppointemnt
                 });

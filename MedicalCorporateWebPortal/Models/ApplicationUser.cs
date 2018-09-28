@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MedicalCorporateWebPortal.Models
 {
-    public class User : IdentityUser<Guid>
+    public class ApplicationUser : IdentityUser<Guid>
     {
         [Required(AllowEmptyStrings = false, ErrorMessage = "Поле логин обязательное")]
         [DisplayName("Логин")]
@@ -57,6 +57,7 @@ namespace MedicalCorporateWebPortal.Models
         Врач,
         Администратор,
         Бухгалтер,
+
         Ресепшен
     }
 

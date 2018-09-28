@@ -1,5 +1,6 @@
 ﻿using MedicalCorporateWebPortal.AppData;
 using MedicalCorporateWebPortal.Models;
+using MedicalCorporateWebPortal.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -10,34 +11,39 @@ namespace MedicalCorporateWebPortal.Controllers
 {
     public class ScheduleController : Controller
     {
-        private readonly MedicCroporateContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        protected UserManager<User> _userManager;
+        protected UserManager<ApplicationUser> _userManager;
 
         protected RoleManager<ApplicationRole> _roleManager;
 
-        public ScheduleController(MedicCroporateContext context, UserManager<User> userManager, RoleManager<ApplicationRole> roleManager)
+        public ScheduleController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
-            _context = context;
+            this._unitOfWork = unitOfWork;
             _userManager = userManager;
             _roleManager = roleManager;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Schedules(int doctorId, int serviceId)
+        public IActionResult Schedules(int doctorId, int serviceId)
         {
-            var doctor = await _context.Doctors.FindAsync(doctorId);
-            var employee = await _context.Employees.FindAsync(doctor.EmployeeID);
-            var user = await _context.Users.FindAsync(employee.UserID);
-            var appointmentDate = _context.AppointmentDates.Where(date => date.DoctorID == doctor.ID);
-            var ReservedTime = _context.AppoitmentReservedTime.Where(time => appointmentDate.Any(date => date.DateOfAppointmentID == time.DateOfAppointmentID));
-            var providedServices = _context.ProvideServices.Where(service => service.DoctorID == doctor.ID);
-            var services = _context.Services.Where(s => providedServices.Any(ps => ps.ServiceID == s.ServiceID));
-            var specialty = await _context.Specialties.FindAsync(doctor.SpecialtyID);
+            var doctor = this._unitOfWork.Doctors.Get(doctorId);
+            var employee = this._unitOfWork.Employees.Get(doctor.EmployeeID);
+            var user = this._unitOfWork.Users.Get(employee.UserID);
+            var appointmentDate = this._unitOfWork.DatesOfAppointments.Find(date => date.DoctorID == doctor.ID);
+            var ReservedTime = this._unitOfWork.ReservedTimes
+                .Find(time => appointmentDate.Any(date => date.DateOfAppointmentID == time.DateOfAppointmentID));
+            var providedServices = this._unitOfWork
+                .DoctorProvideServices
+                .Find(service => service.DoctorID == doctor.ID);
+            var services = this._unitOfWork.Services
+                .Find(s => providedServices.Any(ps => ps.ServiceID == s.ServiceID));
+            var specialty = this._unitOfWork.Specialtys
+                .Get(doctor.SpecialtyID);
 
             var model = new DoctorViewModel
             {
-                User = user,
+                ApplicationUser = user,
                 Doctor = doctor,
                 DatesOfAppointment = appointmentDate,
                 ReservedTimes = ReservedTime,
@@ -52,10 +58,10 @@ namespace MedicalCorporateWebPortal.Controllers
         [HttpPost]
         public async Task<IActionResult> RecordConfirmation(DoctorViewModel model, DateTime selectedTime)
         {
-            var user = await _userManager.FindByNameAsync(model.User.UserName);
-            var service = await _context.Services.FindAsync(int.Parse(model.SelectedService));
-            var doctor = await _context.Doctors.FindAsync(model.Doctor.ID);
-            var specialty = await _context.Specialties.FindAsync(doctor.SpecialtyID);
+            var user = await _userManager.FindByNameAsync(model.ApplicationUser.UserName);
+            var service = this._unitOfWork.Services.Get(int.Parse(model.SelectedService));
+            var doctor = this._unitOfWork.Doctors.Get(model.Doctor.ID);
+            var specialty = this._unitOfWork.Specialtys.Get(doctor.SpecialtyID);
             var viewmodel = new RecordConfirmViewModel
             {
                 DoctorID = doctor.ID,

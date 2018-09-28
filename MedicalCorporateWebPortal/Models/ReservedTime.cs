@@ -18,11 +18,11 @@ namespace MedicalCorporateWebPortal.Models
         public DateTime Time { get; set; }
         
         /// <summary>
-        /// User reserved id
+        /// ApplicationUser reserved id
         /// </summary>
         public Guid UserID { get; set; }
         [ForeignKey("UserID")]
-        public virtual User User { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
 
         public int ServiceID { get; set; }
         [ForeignKey("ServiceID")]

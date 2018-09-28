@@ -7,9 +7,10 @@ namespace MedicalCorporateWebPortal.Models
     public class Patient
     {
         [Key]
+        [ScaffoldColumn(false)]
         public Guid UserID { get; set; }
         [ForeignKey("UserID")]
-        public virtual User User { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
 
         public string Address { get; set; }
 

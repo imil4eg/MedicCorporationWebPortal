@@ -1,5 +1,6 @@
 ﻿using MedicalCorporateWebPortal.AppData;
 using MedicalCorporateWebPortal.Models;
+using MedicalCorporateWebPortal.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -26,7 +27,7 @@ namespace MedicalCorporateWebPortal
             services.AddDbContext<MedicCroporateContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<User, ApplicationRole>()
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
                 .AddEntityFrameworkStores<MedicCroporateContext>()
                 .AddDefaultTokenProviders();
 
@@ -49,6 +50,8 @@ namespace MedicalCorporateWebPortal
             });
 
             services.AddMvc();
+
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -79,15 +82,15 @@ namespace MedicalCorporateWebPortal
             //using (var scope = scopeFactory.CreateScope())
             //{
             //    var roleService = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-            //    var userService = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+            //    var userService = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             //    CreateRoles(roleService, userService).Wait();
             //}
         }
 
-        private async Task CreateRoles(RoleManager<ApplicationRole> roleService, UserManager<User> userService)
+        private async Task CreateRoles(RoleManager<ApplicationRole> roleService, UserManager<ApplicationUser> userService)
         {
             //var roleManager = serviceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
-            //var usersManager = serviceProvider.GetRequiredService<UserManager<User>>();
+            //var usersManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = roleService;
             var userManager = userService;
             string[] roleNames = { "Администратор", "Пациент", "Врач", "Бухгалтер", "Ресепшен" };
@@ -102,7 +105,7 @@ namespace MedicalCorporateWebPortal
                 }
             }
 
-            var powerUser = new User
+            var powerUser = new ApplicationUser
             {
                 UserName = "Admin",
                 Password = "Admin",
@@ -112,7 +115,7 @@ namespace MedicalCorporateWebPortal
                 FirstName = "Admin"
             };
 
-            var userPatient = new User
+            var userPatient = new ApplicationUser
             {
                 UserName = "Patient",
                 Password = "Patient",
@@ -123,7 +126,7 @@ namespace MedicalCorporateWebPortal
                 Role = UserRole.Пациент
             };
 
-            var userDoctor = new User
+            var userDoctor = new ApplicationUser
             {
                 UserName = "Doctor",
                 Password = "Doctor",
@@ -134,7 +137,7 @@ namespace MedicalCorporateWebPortal
                 Role = UserRole.Врач
             };
 
-            var userCalculator = new User
+            var userCalculator = new ApplicationUser
             {
                 UserName = "Calcuc",
                 Password = "Calcuc",

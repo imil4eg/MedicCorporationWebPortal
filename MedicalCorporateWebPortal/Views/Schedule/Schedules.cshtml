@@ -5,7 +5,7 @@
     <div class="emp_info_box">
         <ul class="emp_info_spec">
             <li><img class="doc_img" src="~/images/default-user-image.png" alt="avatar" width="100%" height="100%" /></li>
-            <li class="name">@string.Format("{0} {1}", Model.User.LastName, Model.User.FirstName)</li>
+            <li class="name">@string.Format("{0} {1}", Model.ApplicationUser.LastName, Model.ApplicationUser.FirstName)</li>
             <li class="spec">@Model.SpecialtyName</li>
         </ul>
     </div>
@@ -13,7 +13,7 @@
 <hr />
 @using (Html.BeginForm("RecordConfirmation", "Schedule", FormMethod.Post, new { id = "postForm", @class = "info_main_block" }))
 {
-    @Html.HiddenFor(model => model.User.UserName)
+    @Html.HiddenFor(model => model.ApplicationUser.UserName)
     @Html.HiddenFor(model => model.Doctor.ID)
 
     <div style="width:100%;height:100%">

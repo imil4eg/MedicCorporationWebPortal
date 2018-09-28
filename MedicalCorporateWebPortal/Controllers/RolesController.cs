@@ -10,9 +10,9 @@ namespace MedicalCorporateWebPortal.Controllers
     public class RolesController : Controller
     {
         protected RoleManager<ApplicationRole> _roleManager;
-        protected UserManager<User> _userManager;
+        protected UserManager<ApplicationUser> _userManager;
 
-        public RolesController(RoleManager<ApplicationRole> roleManager, UserManager<User> userManager)
+        public RolesController(RoleManager<ApplicationRole> roleManager, UserManager<ApplicationUser> userManager)
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -21,7 +21,7 @@ namespace MedicalCorporateWebPortal.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid userId)
         {
-            User user = await _userManager.FindByIdAsync(userId.ToString());
+            ApplicationUser user = await _userManager.FindByIdAsync(userId.ToString());
             if(user != null)
             {
                 var userRole = await _userManager.GetRolesAsync(user);
@@ -43,7 +43,7 @@ namespace MedicalCorporateWebPortal.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(Guid userId, string role)
         {
-            User user = await _userManager.FindByIdAsync(userId.ToString());
+            ApplicationUser user = await _userManager.FindByIdAsync(userId.ToString());
             if(user != null)
             {
                 var userRole = await _userManager.GetRolesAsync(user);

@@ -11,6 +11,6 @@ namespace MedicalCorporateWebPortal.Models
 
         public Guid UserID { get; set; }
         [ForeignKey("UserID")]
-        public virtual User User { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
     }
 }

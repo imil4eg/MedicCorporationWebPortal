@@ -63,7 +63,7 @@
                 </div>
             </div>
         </div>
-        @if (User.IsInRole(UserRole.Пациент.ToString()))
+        @if (ApplicationUser.IsInRole(UserRole.Пациент.ToString()))
         {
             <div class="form-group">
                 @Html.LabelFor(model => model.Address, new { @class = "col-md-10" })

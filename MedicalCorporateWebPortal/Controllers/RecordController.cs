@@ -1,5 +1,5 @@
-﻿using MedicalCorporateWebPortal.AppData;
-using MedicalCorporateWebPortal.Models;
+﻿using MedicalCorporateWebPortal.Models;
+using MedicalCorporateWebPortal.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -10,15 +10,15 @@ namespace MedicalCorporateWebPortal.Controllers
 {
     public class RecordController : Controller
     {
-        private readonly MedicCroporateContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        protected UserManager<User> _userManager;
+        protected UserManager<ApplicationUser> _userManager;
 
         protected RoleManager<ApplicationRole> _roleManager;
 
-        public RecordController(MedicCroporateContext context, UserManager<User> userManager, RoleManager<ApplicationRole> roleManager)
+        public RecordController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
-            _context = context;
+            this._unitOfWork = unitOfWork;
             _userManager = userManager;
             _roleManager = roleManager;
         }
@@ -27,27 +27,27 @@ namespace MedicalCorporateWebPortal.Controllers
         //public IActionResult RecordConfirmation(int doctorId, DateTime date, ServiceListViewModel vm)
         //{
         //    int serviceId = vm.SelectedServiceID;
-        //    var doctor = _context.Doctors.SingleOrDefault(d => d.ID == doctorId);
-        //    var employee = _context.Employees.SingleOrDefault(e => e.EmployeeID == doctor.EmployeeID);
-        //    var user = _context.Users.SingleOrDefault(u => u.Id == employee.UserID);
-        //    var service = _context.Services.SingleOrDefault(s => s.ServiceID == serviceId);
-        //    var appointmentDate = _context.AppointmentDates.SingleOrDefault(d => d.Date.Equals(date));
+        //    var doctor = this._unitOfWork.Doctors.SingleOrDefault(d => d.ID == doctorId);
+        //    var employee = this._unitOfWork.Employees.SingleOrDefault(e => e.EmployeeID == doctor.EmployeeID);
+        //    var user = this._unitOfWork.Users.SingleOrDefault(u => u.Id == employee.UserID);
+        //    var service = this._unitOfWork.Services.SingleOrDefault(s => s.ServiceID == serviceId);
+        //    var appointmentDate = this._unitOfWork.AppointmentDates.SingleOrDefault(d => d.Date.Equals(date));
 
-        //    return View(new Tuple<Doctor, Service, DateOfAppointment, string, User>(doctor, service, appointmentDate, date.Date.TimeOfDay.ToString("HH:mm"), user));
+        //    return View(new Tuple<Doctor, Service, DateOfAppointment, string, ApplicationUser>(doctor, service, appointmentDate, date.Date.TimeOfDay.ToString("HH:mm"), user));
         //}
 
         [HttpGet]
         public async Task<IActionResult> RecordConfirmation(DoctorViewModel model, DateTime selectedTime)
         {
-            var doctorUser = await _userManager.FindByNameAsync(model.User.UserName);
-            var service = await _context.Services.FindAsync(int.Parse(model.SelectedService));
-            var doctor = await _context.Doctors.FindAsync(model.Doctor.ID);
+            var doctorUser = await _userManager.FindByNameAsync(model.ApplicationUser.UserName);
+            var service = this._unitOfWork.Services.Get(int.Parse(model.SelectedService));
+            var doctor = this._unitOfWork.Doctors.Get(model.Doctor.ID);
             var viewmodel = new RecordConfirmViewModel
             {
                 DoctorID = doctor.ID,
                 DoctorLastName = doctorUser.LastName,
                 DoctorFirstName = doctorUser.FirstName,
-                DoctorSpeciality = _context.Specialties.FirstOrDefault(s => s.ID == doctor.SpecialtyID).Name,
+                DoctorSpeciality = this._unitOfWork.Specialtys.Find(s => s.ID == doctor.SpecialtyID).FirstOrDefault().Name,
                 ServiceID = service.ServiceID,
                 ServiceName = service.Name,
                 ServiceCost = service.Price,
@@ -64,14 +64,14 @@ namespace MedicalCorporateWebPortal.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    var modelDoctor = await _context.Doctors.FindAsync(model.DoctorID);
-                    var modelEmployee = await _context.Employees.FindAsync(modelDoctor.EmployeeID);
-                    var modelUser = await _context.Users.FindAsync(modelEmployee.UserID);
-                    var modelService = await _context.Services.FindAsync(model.ServiceID);
+                    var modelDoctor = this._unitOfWork.Doctors.Get(model.DoctorID);
+                    var modelEmployee = this._unitOfWork.Employees.Get(modelDoctor.EmployeeID);
+                    var modelUser = this._unitOfWork.Users.Get(modelEmployee.UserID);
+                    var modelService = this._unitOfWork.Services.Get(model.ServiceID);
                     model.DoctorID = modelDoctor.ID;
                     model.DoctorLastName = modelUser.LastName;
                     model.DoctorFirstName = modelUser.FirstName;
-                    model.DoctorSpeciality = _context.Specialties.FirstOrDefault(s => s.ID == modelDoctor.SpecialtyID).Name;
+                    model.DoctorSpeciality = this._unitOfWork.Specialtys.Find(s => s.ID == modelDoctor.SpecialtyID).FirstOrDefault().Name;
                     model.ServiceID = modelService.ServiceID;
                     model.ServiceName = modelService.Name;
                     model.ServiceCost = modelService.Price;
@@ -80,14 +80,15 @@ namespace MedicalCorporateWebPortal.Controllers
             }
 
             Patient patient = null;
-            var date = _context.AppointmentDates.SingleOrDefault(d => d.DoctorID == model.DoctorID && d.Date.Date == model.Date.Date);
-            User user = null;
+            var date = this._unitOfWork.DatesOfAppointments.
+                Find(d => d.DoctorID == model.DoctorID && d.Date.Date == model.Date.Date).FirstOrDefault();
+            ApplicationUser user = null;
             if (User.Identity.IsAuthenticated)
             {
                 user = await _userManager.GetUserAsync(HttpContext.User);
                 if (User.IsInRole(UserRole.Пациент.ToString()))
                 {
-                    patient = await _context.Patients.FindAsync(user.Id);
+                    patient = this._unitOfWork.Patients.Get(user.Id);
 
                 }
                 else
@@ -98,7 +99,7 @@ namespace MedicalCorporateWebPortal.Controllers
             else
             {
                 var userName = Guid.NewGuid().ToString();
-                user = new User
+                user = new ApplicationUser
                 {
                     UserName = userName,
                     Password = "",
@@ -117,12 +118,12 @@ namespace MedicalCorporateWebPortal.Controllers
                     patient = new Patient
                     {
                         UserID = user.Id,
-                        User = user
+                        ApplicationUser = user
                     };
 
-                    await _context.AddAsync(patient);
-                    await _context.SaveChangesAsync();
-                    patient = await _context.Patients.FindAsync(user.Id);
+                    this._unitOfWork.Patients.Add(patient);
+                    this._unitOfWork.Save();
+                    patient = this._unitOfWork.Patients.Get(user.Id);
                 }
             }
 
@@ -131,14 +132,14 @@ namespace MedicalCorporateWebPortal.Controllers
             {
                 DateOfAppointmentID = date.DateOfAppointmentID,
                 DateOfAppointment = date,
-                User = user,
+                ApplicationUser = user,
                 UserID = user.Id,
                 Time = model.Date,
                 ServiceID = model.ServiceID
             };
 
-            await _context.AppoitmentReservedTime.AddAsync(reserve);
-            await _context.SaveChangesAsync();
+            this._unitOfWork.ReservedTimes.Add(reserve);
+            this._unitOfWork.Save();
 
             ViewBag.Message = "Пользователь успешно записан";
             return View("Info");

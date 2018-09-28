@@ -1,5 +1,6 @@
 ﻿using MedicalCorporateWebPortal.AppData;
 using MedicalCorporateWebPortal.Models;
+using MedicalCorporateWebPortal.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -10,15 +11,15 @@ namespace MedicalCorporateWebPortal.Controllers
 {
     public class AppointmentController : Controller
     {
-        protected MedicCroporateContext _context;
+        protected IUnitOfWork _unitOfWork;
 
-        protected UserManager<User> _userManager;
+        protected UserManager<ApplicationUser> _userManager;
 
         protected RoleManager<ApplicationRole> _roleManager;
 
-        public AppointmentController(MedicCroporateContext context, UserManager<User> userManager, RoleManager<ApplicationRole> roleManager)
+        public AppointmentController(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, RoleManager<ApplicationRole> roleManager)
         {
-            _context = context;
+            this._unitOfWork = unitOfWork;
             _userManager = userManager;
             _roleManager = roleManager;
         }
@@ -32,15 +33,15 @@ namespace MedicalCorporateWebPortal.Controllers
                 List<AppoitmentViewModel> models = new List<AppoitmentViewModel>();
                 if (user.Role == UserRole.Врач)
                 {
-                    var employee = _context.Employees.FirstOrDefault(e => e.UserID == user.Id);
-                    var doctor = _context.Doctors.FirstOrDefault(d => d.EmployeeID == employee.EmployeeID);
-                    appointments = _context.Appointments.Where(a => a.DoctorId == doctor.ID).ToList();
+                    var employee = this._unitOfWork.Employees.Find(e => e.UserID == user.Id).FirstOrDefault();
+                    var doctor = this._unitOfWork.Doctors.Find(d => d.EmployeeID == employee.EmployeeID).FirstOrDefault();
+                    appointments = this._unitOfWork.Appointments.Find(a => a.DoctorId == doctor.ID).ToList();
 
                     foreach (var appointment in appointments)
                     {
-                        var patient = await _context.Patients.FindAsync(appointment.PatientId);
-                        var patientUser = await _context.Users.FindAsync(patient.UserID);
-                        var service = await _context.Services.FindAsync(appointment.ServiceID);
+                        var patient = this._unitOfWork.Patients.Get(appointment.PatientId);
+                        var patientUser = this._unitOfWork.Users.Get(patient.UserID);
+                        var service = this._unitOfWork.Services.Get(appointment.ServiceID);
 
                         models.Add(new AppoitmentViewModel
                         {
@@ -59,15 +60,15 @@ namespace MedicalCorporateWebPortal.Controllers
                 }
                 else if(user.Role == UserRole.Пациент)
                 {
-                    var patient = await _context.Patients.FindAsync(user.Id);
-                    appointments = _context.Appointments.Where(a => a.PatientId == patient.UserID).ToList();
+                    var patient = this._unitOfWork.Patients.Get(user.Id);
+                    appointments = this._unitOfWork.Appointments.Find(a => a.PatientId == patient.UserID).ToList();
 
                     foreach (var appointment in appointments)
                     {
-                        var doctor = await _context.Doctors.FindAsync(appointment.DoctorId);
-                        var employee = await _context.Employees.FindAsync(doctor.EmployeeID);
-                        var doctorUser = await _context.Users.FindAsync(employee.UserID);
-                        var service = await _context.Services.FindAsync(appointment.ServiceID);
+                        var doctor = this._unitOfWork.Doctors.Get(appointment.DoctorId);
+                        var employee = this._unitOfWork.Employees.Get(doctor.EmployeeID);
+                        var doctorUser = this._unitOfWork.Users.Get(employee.UserID);
+                        var service = this._unitOfWork.Services.Get(appointment.ServiceID);
 
                         models.Add(new AppoitmentViewModel
                         {
@@ -92,12 +93,12 @@ namespace MedicalCorporateWebPortal.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> AppointmentDetails(int appointmentId)
+        public IActionResult AppointmentDetails(int appointmentId)
         {
-            Appointment appoitment = await _context.Appointments.FindAsync(appointmentId);
-            Patient patient = await _context.Patients.FindAsync(appoitment.PatientId);
-            User patientUser = await _context.Users.FindAsync(patient.UserID);
-            Service service = await _context.Services.FindAsync(appoitment.ServiceID);
+            Appointment appoitment = this._unitOfWork.Appointments.Get(appointmentId);
+            Patient patient = this._unitOfWork.Patients.Get(appoitment.PatientId);
+            ApplicationUser patientUser = this._unitOfWork.Users.Get(patient.UserID);
+            Service service = this._unitOfWork.Services.Get(appoitment.ServiceID);
             AppoitmentViewModel model = new AppoitmentViewModel
             {
                 AppointmentId = appoitment.Id,
@@ -117,10 +118,10 @@ namespace MedicalCorporateWebPortal.Controllers
                 return View(model);
             }
 
-            Appointment appointment = await _context.Appointments.FindAsync(model.AppointmentId);
+            Appointment appointment = this._unitOfWork.Appointments.Get(model.AppointmentId);
             appointment.Information = model.Information;
             appointment.Result = model.Result;
-            await _context.SaveChangesAsync();
+            this._unitOfWork.Save();
             ViewBag.Message = "Данные успешно изменены";
             return View("Info");
         }
